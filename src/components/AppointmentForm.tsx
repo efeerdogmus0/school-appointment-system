@@ -91,8 +91,12 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
       setSuccess('Okul ziyaret randevunuz başarıyla oluşturulmuştur. Teşekkür ederiz.');
       setFormData(initialFormData);
 
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Bir hata oluştu.');
+      } else {
+        setError('Bilinmeyen bir hata oluştu.');
+      }
     } finally {
       setIsLoading(false);
     }

@@ -8,7 +8,7 @@ async function getAppointments() {
   try {
     const data = await fs.readFile(appointmentsFilePath, 'utf-8');
     return JSON.parse(data);
-  } catch (error) {
+  } catch {
     return [];
   }
 }
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
 
     const appointments = await getAppointments();
 
-    const isDuplicate = appointments.some((apt: any) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
+    const isDuplicate = appointments.some((apt: { appointmentDateTime: string | number | Date }) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
     if (isDuplicate) {
       return NextResponse.json({ message: 'Bu saat zaten dolu. Lütfen başka bir saat seçin.' }, { status: 409 });
     }
@@ -41,8 +41,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ message: 'Randevu başarıyla oluşturuldu.', appointment: newAppointment }, { status: 201 });
 
-  } catch (error) {
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error(error);
+      return NextResponse.json({ message: error.message }, { status: 500 });
+    }
     console.error(error);
-    return NextResponse.json({ message: 'Sunucu hatası oluştu.' }, { status: 500 });
+    return NextResponse.json({ message: 'Bilinmeyen bir sunucu hatası oluştu.' }, { status: 500 });
   }
 }

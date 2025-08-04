@@ -43,6 +43,7 @@ const generateTimeSlots = (day: Date) => {
   const breakEnd = new Date(day);
   breakEnd.setHours(12, 20, 0, 0);
 
+  // eslint-disable-next-line prefer-const
   let currentTime = new Date(startTime);
 
   while (currentTime < endTime) {
