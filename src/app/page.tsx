@@ -1,12 +1,36 @@
+'use client';
+
+import { useState } from 'react';
+import AppointmentCalendar from "@/components/AppointmentCalendar";
+import AppointmentForm from '@/components/AppointmentForm';
+import { Container, Alert } from 'react-bootstrap';
+
 export default function Home() {
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
+
   return (
-    <div className="bg-white p-8 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-        Randevu Takvimi
-      </h2>
-      <div className="min-h-[400px] flex items-center justify-center bg-gray-50 rounded-md">
-        <p className="text-gray-500">Cal.com randevu takvimi buraya eklenecek.</p>
-      </div>
-    </div>
+    <main className="my-5">
+      <Container>
+        <h1 className="text-center mb-4 fw-bold">Okul Ziyaret Randevu Sistemi</h1>
+        <p className="text-center mb-5 lead">
+          Okulumuzu ziyaret etmek için lütfen aşağıdan uygun bir tarih ve saat seçiniz.
+        </p>
+
+        <Alert variant="info" className="text-center">
+          <Alert.Heading as="h5">Önemli Bilgilendirme</Alert.Heading>
+          <p className="mb-0">
+            Ziyaret randevuları yalnızca <strong>18-22 Ağustos</strong> ve <strong>25-26 Ağustos</strong> tarihlerinde, <strong>10:00 - 16:00</strong> saatleri arasında verilmektedir.
+          </p>
+        </Alert>
+
+        <AppointmentCalendar onDateTimeSelect={setSelectedDateTime} />
+
+        {selectedDateTime && (
+          <div className="mt-5 pt-5 border-top">
+            <AppointmentForm selectedDateTime={selectedDateTime} />
+          </div>
+        )}
+      </Container>
+    </main>
   );
 }

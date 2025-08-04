@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nişantaşı Nuri Akın Anadolu Lisesi - Okul Ziyaret Randevu Sistemi
 
-## Getting Started
+Bu proje, Nişantaşı Nuri Akın Anadolu Lisesi'ni ziyaret etmek isteyen misafirlerin kolayca randevu alabilmesi için geliştirilmiş modern ve kullanıcı dostu bir web uygulamasıdır.
 
-First, run the development server:
+## ✨ Özellikler
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Modern ve Kullanıcı Dostu Arayüz:** `react-bootstrap` ile geliştirilmiş, sade ve şık bir tasarım.
+- **Tamamen Duyarlı (Responsive):** Mobil, tablet ve masaüstü cihazlarda sorunsuz bir deneyim sunar.
+- **İki Adımlı Saat Seçimi:** Önce saat, sonra dakika seçimi yapılarak randevu saatinin kolayca belirlenmesini sağlar.
+- **Kolay Randevu Akışı:**
+    1.  Takvimden size uygun bir gün seçin.
+    2.  İstediğiniz saati ve dakikayı seçin.
+    3.  Ziyaretçi ve öğrenci bilgilerini içeren formu doldurun.
+    4.  Randevunuzu onaylayın.
+- **Belirli Randevu Tarihleri:** Randevular sadece okul yönetimi tarafından belirlenen tarihlerde (örn: 18-22 ve 25-26 Ağustos) alınabilir. Diğer günler takvimde pasiftir.
+- **Özelleştirilmiş Zamanlama:** Randevu saatleri **10:00 - 16:00** arasında, 5 dakikalık periyotlarla ve **12:00-12:20** arası mola olacak şekilde ayarlanmıştır.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Kullanılan Teknolojiler
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Frontend:** [Next.js](https://nextjs.org/) (React Framework)
+- **Backend API:** Next.js API Routes
+- **UI Kütüphaneleri:**
+    - [React Bootstrap](https://react-bootstrap.github.io/)
+    - [React Day Picker](http://react-day-picker.js.org/)
+- **Dil:** TypeScript
+- **Styling:** Bootstrap
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🚀 Kurulum ve Çalıştırma
 
-## Learn More
+Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
 
-To learn more about Next.js, take a look at the following resources:
+1.  **Projeyi klonlayın veya indirin.**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2.  **Gerekli bağımlılıkları yükleyin:**
+    ```bash
+    npm install
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3.  **Geliştirme sunucusunu başlatın:**
+    ```bash
+    npm run dev
+    ```
 
-## Deploy on Vercel
+4.  **Uygulamayı açın:**
+    Tarayıcınızda [http://localhost:3001](http://localhost:3001) adresini ziyaret edin.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ☁️ Vercel ile Yayınlama
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Bu proje, Next.js'in yaratıcıları tarafından geliştirilen [Vercel](https://vercel.com/) platformu üzerinden kolayca yayınlanabilir. Projenizi bir GitHub repositorisine yükledikten sonra Vercel'e bağlayarak saniyeler içinde canlıya alabilirsiniz.
+
+### ⚠️ Önemli Not
+
+Mevcut yapılandırmada, alınan randevular projenin ana dizinindeki `appointments.json` dosyasına kaydedilmektedir. Vercel'in dosya sistemi kalıcı değildir (ephemeral). Bu, sunucu yeniden başladığında veya yeni bir sürüm yayınlandığında **bu dosyanın sıfırlanacağı ve içindeki tüm randevu verilerinin kaybolacağı** anlamına gelir.
+
+Bu haliyle sistem, kısa süreli kullanımlar veya testler için uygundur. Uzun vadeli ve kalıcı bir çözüm için randevu verilerinin **Vercel Postgres** veya benzeri harici bir veritabanında saklanması gerekmektedir.
