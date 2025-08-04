@@ -85,7 +85,7 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Bir hata oluştu.');
+        throw new Error(errorData.message || 'Sunucudan bir hata döndü.');
       }
 
       setSuccess('Okul ziyaret randevunuz başarıyla oluşturulmuştur. Teşekkür ederiz.');
