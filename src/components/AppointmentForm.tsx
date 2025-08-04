@@ -110,6 +110,7 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
     <Form onSubmit={handleSubmit}>
       <h3 className="text-center mb-4 fw-bold">Okul Ziyaret Randevu Formu</h3>
       <p className="text-center mb-4">Seçilen Randevu Tarihi: <strong>{selectedDateTime.toLocaleString('tr-TR', { dateStyle: 'full', timeStyle: 'short' })}</strong></p>
+      <p className="text-center text-muted mb-4 fst-italic">Tüm alanların doldurulması zorunludur.</p>
 
       <Accordion defaultActiveKey="0">
         {/* ÖĞRENCİ BİLGİLERİ */}
