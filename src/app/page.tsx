@@ -87,6 +87,14 @@ const PreRegistrationPage = () => {
         newErrors.studentTC = 'T.C. Kimlik Numarası 11 haneli olmalıdır.';
     }
 
+    // Phone number validation (basic)
+    if (formData.studentPhone && !/^\d{10,}$/.test(formData.studentPhone.replace(/\s/g, ''))) {
+        newErrors.studentPhone = 'Geçerli bir telefon numarası giriniz (en az 10 rakam).';
+    }
+    if (formData.guardianPhoneCell && !/^\d{10,}$/.test(formData.guardianPhoneCell.replace(/\s/g, ''))) {
+        newErrors.guardianPhoneCell = 'Geçerli bir telefon numarası giriniz (en az 10 rakam).';
+    }
+
     // Appointment slot validation
     if (!selectedSlot) {
       newErrors.appointment = 'Lütfen bir randevu tarihi ve saati seçiniz.';
