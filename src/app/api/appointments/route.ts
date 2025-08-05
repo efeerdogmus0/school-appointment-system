@@ -39,7 +39,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Eksik bilgi. Lütfen tüm zorunlu alanları doldurun (Öğrenci Adı, TC, Veli Cep Telefonu).' }, { status: 400 });
     }
 
-    let allAppointments = await kv.get<Appointment[]>('appointments') || [];
+    const allAppointments = await kv.get<Appointment[]>('appointments') || [];
 
     // Duplicate check
     const isDuplicate = allAppointments.some(
