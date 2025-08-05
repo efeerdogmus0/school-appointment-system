@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Row, Col, Button, Alert, Spinner } from 'react-bootstrap';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -13,7 +13,6 @@ const END_HOUR = 16;
 const BREAK_START_MINUTE = 12 * 60;
 const BREAK_END_MINUTE = 12 * 60 + 20;
 
-// Tarih formatını YYYY-MM-DD'ye çevirir
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
 // --- Arayüz Bileşeni ---
@@ -24,39 +23,41 @@ interface AppointmentSchedulerProps {
 
 const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date(AVAILABLE_DATES[0]));
+  const [selectedHour, setSelectedHour] = useState<number | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
-  const [timeSlots, setTimeSlots] = useState<string[]>([]);
   const [bookedSlots, setBookedSlots] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Seçilen tarih değiştiğinde saat aralıklarını ve dolu slotları güncelle
-  useEffect(() => {
-    if (!selectedDate) return;
-
-    // 1. Saat aralıklarını oluştur
+  // Müsait saat aralıklarını hesapla
+  const timeSlots = useMemo(() => {
     const slots: string[] = [];
     for (let hour = START_HOUR; hour < END_HOUR; hour++) {
       for (let minute = 0; minute < 60; minute += SLOT_DURATION) {
         const totalMinutes = hour * 60 + minute;
         if (totalMinutes < BREAK_START_MINUTE || totalMinutes >= BREAK_END_MINUTE) {
-          const time = `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-          slots.push(time);
+          slots.push(`${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`);
         }
       }
     }
-    setTimeSlots(slots);
+    return slots;
+  }, []);
 
-    // 2. Dolu slotları API'den çek
+  // Müsait saatleri (saat başlarını) hesapla
+  const availableHours = useMemo(() => {
+    return [...new Set(timeSlots.map(slot => parseInt(slot.split(':')[0])))];
+  }, [timeSlots]);
+
+  // Seçilen tarih değiştiğinde dolu slotları API'den çek
+  useEffect(() => {
+    if (!selectedDate) return;
+
     const fetchBookedSlots = async () => {
       setIsLoading(true);
       try {
         const response = await fetch(`/api/slots?date=${formatDate(selectedDate)}`);
-        if (!response.ok) {
-          throw new Error('API isteği başarısız oldu');
-        }
+        if (!response.ok) throw new Error('API isteği başarısız oldu');
         const data = await response.json();
         setBookedSlots(data.booked || []);
-
       } catch (error) {
         console.error('Dolu randevular alınamadı:', error);
         setBookedSlots([]);
@@ -66,30 +67,73 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
     };
 
     fetchBookedSlots();
-    setSelectedTime(null); // Tarih değişince saat seçimini sıfırla
+    setSelectedHour(null); // Tarih değişince saat ve dakika seçimini sıfırla
+    setSelectedTime(null);
     onSlotSelect(null);
   }, [selectedDate, onSlotSelect]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDateChange = (value: any) => {
-    if (value instanceof Date) {
-      setSelectedDate(value);
-    }
+    if (value instanceof Date) setSelectedDate(value);
   };
 
-  const handleTimeSelect = (time: string) => {
+  const handleHourSelect = (hour: number) => {
+    setSelectedHour(hour);
+    setSelectedTime(null); // Saat değişince dakika seçimini sıfırla
+    onSlotSelect(null);
+  };
+
+  const handleMinuteSelect = (minute: number) => {
+    if (selectedHour === null) return;
+    const time = `${String(selectedHour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
     setSelectedTime(time);
     if (selectedDate) {
       onSlotSelect({ date: formatDate(selectedDate), time });
     }
   };
 
-  // Sadece randevuya açık tarihlerin seçilebilmesini sağlar
   const tileDisabled = ({ date, view }: { date: Date; view: string }) => {
-    if (view === 'month') {
-      return !AVAILABLE_DATES.includes(formatDate(date));
+    return view === 'month' && !AVAILABLE_DATES.includes(formatDate(date));
+  };
+
+  const renderTimeSlots = () => {
+    if (isLoading) return <div className="text-center"><Spinner animation="border" /></div>;
+
+    // 1. Adım: Saat Seçimi
+    if (selectedHour === null) {
+      return (
+        <div className="d-flex flex-wrap justify-content-center gap-2 p-2">
+          {availableHours.map(hour => (
+            <Button key={hour} variant="outline-primary" onClick={() => handleHourSelect(hour)}>
+              {`${hour}:00`}
+            </Button>
+          ))}
+        </div>
+      );
     }
-    return false;
+
+    // 2. Adım: Dakika Seçimi
+    const minuteSlots = timeSlots.filter(slot => slot.startsWith(`${String(selectedHour).padStart(2, '0')}:`));
+    return (
+      <div>
+        <Button variant="link" size="sm" onClick={() => setSelectedHour(null)} className="mb-2">‹ Geri</Button>
+        <div className="d-flex flex-wrap justify-content-center gap-2 p-2">
+          {minuteSlots.map(time => {
+            const minute = parseInt(time.split(':')[1]);
+            const isBooked = bookedSlots.includes(time);
+            return (
+              <Button
+                key={time}
+                variant={selectedTime === time ? 'success' : 'outline-primary'}
+                onClick={() => handleMinuteSelect(minute)}
+                disabled={isBooked}
+              >
+                {time}
+              </Button>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -107,30 +151,11 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
         </Col>
         <Col md={6}>
           {selectedDate ? (
-            <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
-              <h6 className="text-center sticky-top bg-white py-2">Müsait Saatler</h6>
-              {isLoading ? <div className="text-center"><Spinner animation="border" /></div> : 
-                <div className="d-flex flex-wrap justify-content-center gap-2 p-2">
-                  {timeSlots.length > 0 ? (
-                    timeSlots.map(time => {
-                      const isBooked = bookedSlots.includes(time);
-                      return (
-                        <Button
-                          key={time}
-                          variant={selectedTime === time ? 'success' : 'outline-primary'}
-                          onClick={() => handleTimeSelect(time)}
-                          disabled={isBooked}
-                          className="flex-grow-1"
-                        >
-                          {time}
-                        </Button>
-                      );
-                    })
-                  ) : (
-                    <Alert variant="warning">Bu tarih için uygun saat bulunmuyor.</Alert>
-                  )}
-                </div>
-              }
+            <div style={{ minHeight: '250px' }}>
+              <h6 className="text-center sticky-top bg-white py-2">
+                {selectedHour === null ? 'Saat Seçin' : `Saat ${selectedHour}:00 için Dakika Seçin`}
+              </h6>
+              {renderTimeSlots()}
             </div>
           ) : (
             <div className="d-flex align-items-center justify-content-center h-100">
