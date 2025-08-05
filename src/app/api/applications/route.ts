@@ -57,23 +57,62 @@ export async function DELETE(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const applicationData = await request.json();
+    const body = await request.json();
 
-    // Basic validation to ensure we have some data
-    if (!applicationData || Object.keys(applicationData).length === 0) {
-      return NextResponse.json({ message: 'Başvuru verisi boş olamaz.' }, { status: 400 });
+    // 1. Destructure all expected data from the body
+    const {
+      appointmentDate, appointmentTime,
+      studentTC, studentName, studentDob, studentPhone, studentPob, studentPrevSchool, studentBloodType, studentDisability, studentChronicIllness, parentsTogether, parentsBiological,
+      guardianName, guardianEducation, guardianOccupation, guardianPhoneCell, guardianPhoneHome, guardianPhoneWork, guardianEmail, guardianBloodType, guardianAddressHome, guardianAddressWork, guardianChronicIllness, guardianDisability, guardianIncome,
+      fatherName, fatherAlive, fatherEducation, fatherOccupation, fatherPhoneCell, fatherPhoneHome, fatherPhoneWork, fatherEmail, fatherBloodType, fatherAddressHome, fatherAddressWork, fatherChronicIllness, fatherDisability, fatherIncome,
+      lgsScore, lgsPercentileTurkey, lgsPercentileCity, scholarshipWon, tubitakInterest,
+      turkishCorrect, turkishWrong, mathCorrect, mathWrong, scienceCorrect, scienceWrong, englishCorrect, englishWrong, religionCorrect, religionWrong, historyCorrect, historyWrong,
+      opinionSchool, opinionExpectations, opinionSuggestions, supportSchool, joinPta
+    } = body;
+
+    // 2. Server-side validation for required fields
+    const requiredFields = {
+      appointmentDate, appointmentTime, studentTC, studentName, studentDob, studentPhone,
+      guardianName, guardianPhoneCell, guardianEmail, lgsScore, lgsPercentileTurkey
+    };
+
+    for (const [key, value] of Object.entries(requiredFields)) {
+      if (!value) {
+        return NextResponse.json({ message: `Eksik bilgi: ${key} alanı zorunludur.` }, { status: 400 });
+      }
     }
 
-    // Generate a unique ID for the application
-    const applicationId = `application:${Date.now()}`;
+    // 3. Concurrency Check: Ensure the slot is not already taken
+    const allApplicationKeys = [];
+    for await (const key of kv.scanIterator({ match: 'application:*' })) {
+      allApplicationKeys.push(key);
+    }
 
-    // Save the application data to Vercel KV
+    if (allApplicationKeys.length > 0) {
+        const allApplications = await kv.mget(...allApplicationKeys);
+        const slotExists = allApplications.some(app => 
+            (app as any)?.appointmentDate === appointmentDate && 
+            (app as any)?.appointmentTime === appointmentTime
+        );
+
+        if (slotExists) {
+            return NextResponse.json({ message: 'Bu randevu saati daha önce alınmış. Lütfen farklı bir saat seçiniz.' }, { status: 409 }); // 409 Conflict
+        }
+    }
+
+    // 4. If all checks pass, create and save the application data
+    const applicationId = `application:${Date.now()}`;
+    const applicationData = { ...body, id: applicationId };
+
     await kv.set(applicationId, applicationData);
 
-    return NextResponse.json({ message: 'Başvuru başarıyla alındı.', id: applicationId }, { status: 201 });
+    return NextResponse.json({ message: 'Başvurunuz ve randevunuz başarıyla alınmıştır.', id: applicationId }, { status: 201 });
 
   } catch (error) {
     console.error('Error saving application:', error);
+    if (error instanceof SyntaxError) {
+      return NextResponse.json({ message: 'Geçersiz veri formatı.' }, { status: 400 });
+    }
     return NextResponse.json({ message: 'Başvuru kaydedilirken bir sunucu hatası oluştu.' }, { status: 500 });
   }
 }
