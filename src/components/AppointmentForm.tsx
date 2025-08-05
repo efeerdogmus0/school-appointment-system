@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, ChangeEvent } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { Form, Button, Alert, Spinner, Accordion, Row, Col } from 'react-bootstrap';
 
 interface AppointmentFormProps {

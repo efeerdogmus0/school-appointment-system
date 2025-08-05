@@ -37,8 +37,12 @@ const AdminPage = () => {
       if (!res.ok) throw new Error('Randevular alınamadı.');
       const data = await res.json();
       setAppointments(data.sort((a: Appointment, b: Appointment) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Bilinmeyen bir hata oluştu.');
+      }
     } finally {
       setLoading(false);
     }
@@ -53,8 +57,12 @@ const AdminPage = () => {
       if (!res.ok) throw new Error(data.message || 'Randevu silinemedi.');
       setMessage('Randevu başarıyla silindi.');
       fetchAppointments(); // Listeyi yenile
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Randevu silinirken bilinmeyen bir hata oluştu.');
+      }
     }
   };
 
