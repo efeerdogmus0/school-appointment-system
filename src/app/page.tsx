@@ -83,7 +83,22 @@ const PreRegistrationPage = () => {
       { key: 'guardianIncome', name: 'Veli Aylık Geliri' },
       // Sınav
       { key: 'lgsScore', name: 'LGS Puanı' },
-      { key: 'lgsPercentileTurkey', name: 'Türkiye Geneli Yüzdelik Dilimi' },
+      { key: 'lgsPercentileTurkey', name: 'LGS Türkiye Yüzdelik Dilimi' },
+      { key: 'lgsPercentileCity', name: 'LGS İl Yüzdelik Dilimi' },
+      { key: 'scholarshipWon', name: 'Bursluluk Sınavı Durumu' },
+      { key: 'tubitakInterest', name: 'TÜBİTAK İlgi Alanı' },
+      { key: 'turkishCorrect', name: 'Türkçe Doğru' },
+      { key: 'turkishWrong', name: 'Türkçe Yanlış' },
+      { key: 'mathCorrect', name: 'Matematik Doğru' },
+      { key: 'mathWrong', name: 'Matematik Yanlış' },
+      { key: 'scienceCorrect', name: 'Fen Bilimleri Doğru' },
+      { key: 'scienceWrong', name: 'Fen Bilimleri Yanlış' },
+      { key: 'englishCorrect', name: 'Yabancı Dil Doğru' },
+      { key: 'englishWrong', name: 'Yabancı Dil Yanlış' },
+      { key: 'religionCorrect', name: 'Din Kültürü Doğru' },
+      { key: 'religionWrong', name: 'Din Kültürü Yanlış' },
+      { key: 'historyCorrect', name: 'T.C. İnkılap Doğru' },
+      { key: 'historyWrong', name: 'T.C. İnkılap Yanlış' },
       // Diğer
       { key: 'supportSchool', name: 'Okula Destek' },
       { key: 'joinPta', name: 'Okul Aile Birliği' },
@@ -284,19 +299,19 @@ const PreRegistrationPage = () => {
                       <Row>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>LGS Yerleştirme Puanı</RequiredLabel><Form.Control id="lgsScore" type="number" step="0.01" name="lgsScore" onChange={handleInputChange} isInvalid={!!errors.lgsScore} /><Form.Control.Feedback type="invalid">{errors.lgsScore}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Türkiye Geneli Yüzdelik Dilimi</RequiredLabel><Form.Control id="lgsPercentileTurkey" type="number" step="0.01" name="lgsPercentileTurkey" onChange={handleInputChange} isInvalid={!!errors.lgsPercentileTurkey} /><Form.Control.Feedback type="invalid">{errors.lgsPercentileTurkey}</Form.Control.Feedback></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>İl Geneli Yüzdelik Dilimi</Form.Label><Form.Control type="number" step="0.01" name="lgsPercentileCity" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Bursluluk Sınavını kazandı mı?</Form.Label><Form.Select name="scholarshipWon" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group></Col>
-                        <Col md={12}><Form.Group className="mb-3"><Form.Label>TÜBİTAK Bilim Olimpiyatlarına hangi alanda başvuru yapmak istersiniz?</Form.Label><Form.Control type="text" name="tubitakInterest" onChange={handleInputChange} /></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>İl Geneli Yüzdelik Dilimi</RequiredLabel><Form.Control id="lgsPercentileCity" type="number" step="0.01" name="lgsPercentileCity" onChange={handleInputChange} isInvalid={!!errors.lgsPercentileCity} /><Form.Control.Feedback type="invalid">{errors.lgsPercentileCity}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Bursluluk Sınavını kazandı mı?</RequiredLabel><Form.Select id="scholarshipWon" name="scholarshipWon" onChange={handleInputChange} isInvalid={!!errors.scholarshipWon}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.scholarshipWon}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={12}><Form.Group className="mb-3"><RequiredLabel>TÜBİTAK Bilim Olimpiyatlarına hangi alanda başvuru yapmak istersiniz?</RequiredLabel><Form.Control id="tubitakInterest" type="text" name="tubitakInterest" onChange={handleInputChange} isInvalid={!!errors.tubitakInterest} /><Form.Control.Feedback type="invalid">{errors.tubitakInterest}</Form.Control.Feedback></Form.Group></Col>
                       </Row>
                       <hr />
                       <h6>Derslere Göre Doğru/Yanlış Sayıları</h6>
                       <Row>
-                        <Col xs={6} md={3}><Form.Group className="mb-3"><Form.Label>Türkçe D/Y</Form.Label><div className="d-flex"><Form.Control type="number" name="turkishCorrect" placeholder="D" onChange={handleInputChange} /><Form.Control type="number" name="turkishWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} /></div></Form.Group></Col>
-                        <Col xs={6} md={3}><Form.Group className="mb-3"><Form.Label>Matematik D/Y</Form.Label><div className="d-flex"><Form.Control type="number" name="mathCorrect" placeholder="D" onChange={handleInputChange} /><Form.Control type="number" name="mathWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} /></div></Form.Group></Col>
-                        <Col xs={6} md={3}><Form.Group className="mb-3"><Form.Label>Fen Bil. D/Y</Form.Label><div className="d-flex"><Form.Control type="number" name="scienceCorrect" placeholder="D" onChange={handleInputChange} /><Form.Control type="number" name="scienceWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} /></div></Form.Group></Col>
-                        <Col xs={6} md={3}><Form.Group className="mb-3"><Form.Label>Yabancı Dil D/Y</Form.Label><div className="d-flex"><Form.Control type="number" name="englishCorrect" placeholder="D" onChange={handleInputChange} /><Form.Control type="number" name="englishWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} /></div></Form.Group></Col>
-                        <Col xs={6} md={3}><Form.Group className="mb-3"><Form.Label>Din Kültürü D/Y</Form.Label><div className="d-flex"><Form.Control type="number" name="religionCorrect" placeholder="D" onChange={handleInputChange} /><Form.Control type="number" name="religionWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} /></div></Form.Group></Col>
-                        <Col xs={6} md={3}><Form.Group className="mb-3"><Form.Label>T.C. İnkılap D/Y</Form.Label><div className="d-flex"><Form.Control type="number" name="historyCorrect" placeholder="D" onChange={handleInputChange} /><Form.Control type="number" name="historyWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} /></div></Form.Group></Col>
+                        <Col xs={6} md={3}><Form.Group className="mb-3"><RequiredLabel>Türkçe D/Y</RequiredLabel><div className="d-flex"><Form.Control id="turkishCorrect" type="number" name="turkishCorrect" placeholder="D" onChange={handleInputChange} isInvalid={!!errors.turkishCorrect} /><Form.Control id="turkishWrong" type="number" name="turkishWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} isInvalid={!!errors.turkishWrong} /></div><Form.Control.Feedback type="invalid" className="d-block">{errors.turkishCorrect || errors.turkishWrong}</Form.Control.Feedback></Form.Group></Col>
+                        <Col xs={6} md={3}><Form.Group className="mb-3"><RequiredLabel>Matematik D/Y</RequiredLabel><div className="d-flex"><Form.Control id="mathCorrect" type="number" name="mathCorrect" placeholder="D" onChange={handleInputChange} isInvalid={!!errors.mathCorrect} /><Form.Control id="mathWrong" type="number" name="mathWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} isInvalid={!!errors.mathWrong} /></div><Form.Control.Feedback type="invalid" className="d-block">{errors.mathCorrect || errors.mathWrong}</Form.Control.Feedback></Form.Group></Col>
+                        <Col xs={6} md={3}><Form.Group className="mb-3"><RequiredLabel>Fen Bil. D/Y</RequiredLabel><div className="d-flex"><Form.Control id="scienceCorrect" type="number" name="scienceCorrect" placeholder="D" onChange={handleInputChange} isInvalid={!!errors.scienceCorrect} /><Form.Control id="scienceWrong" type="number" name="scienceWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} isInvalid={!!errors.scienceWrong} /></div><Form.Control.Feedback type="invalid" className="d-block">{errors.scienceCorrect || errors.scienceWrong}</Form.Control.Feedback></Form.Group></Col>
+                        <Col xs={6} md={3}><Form.Group className="mb-3"><RequiredLabel>Yabancı Dil D/Y</RequiredLabel><div className="d-flex"><Form.Control id="englishCorrect" type="number" name="englishCorrect" placeholder="D" onChange={handleInputChange} isInvalid={!!errors.englishCorrect} /><Form.Control id="englishWrong" type="number" name="englishWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} isInvalid={!!errors.englishWrong} /></div><Form.Control.Feedback type="invalid" className="d-block">{errors.englishCorrect || errors.englishWrong}</Form.Control.Feedback></Form.Group></Col>
+                        <Col xs={6} md={3}><Form.Group className="mb-3"><RequiredLabel>Din Kültürü D/Y</RequiredLabel><div className="d-flex"><Form.Control id="religionCorrect" type="number" name="religionCorrect" placeholder="D" onChange={handleInputChange} isInvalid={!!errors.religionCorrect} /><Form.Control id="religionWrong" type="number" name="religionWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} isInvalid={!!errors.religionWrong} /></div><Form.Control.Feedback type="invalid" className="d-block">{errors.religionCorrect || errors.religionWrong}</Form.Control.Feedback></Form.Group></Col>
+                        <Col xs={6} md={3}><Form.Group className="mb-3"><RequiredLabel>T.C. İnkılap D/Y</RequiredLabel><div className="d-flex"><Form.Control id="historyCorrect" type="number" name="historyCorrect" placeholder="D" onChange={handleInputChange} isInvalid={!!errors.historyCorrect} /><Form.Control id="historyWrong" type="number" name="historyWrong" placeholder="Y" className="ms-2" onChange={handleInputChange} isInvalid={!!errors.historyWrong} /></div><Form.Control.Feedback type="invalid" className="d-block">{errors.historyCorrect || errors.historyWrong}</Form.Control.Feedback></Form.Group></Col>
                       </Row>
                     </Accordion.Body>
                   </Accordion.Item>
