@@ -2,14 +2,19 @@
 
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button, Accordion, Alert, Card } from 'react-bootstrap';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+import AppointmentScheduler from '@/components/AppointmentScheduler';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // Helper component for required fields
 // Define the shape of our form data
 interface FormData {
-  [key: string]: string; // Allow for string indexing
+  [key: string]: string; 
+}
+
+// State for the selected appointment slot
+interface AppointmentSlot {
+  date: string;
+  time: string;
 }
 
 const RequiredLabel = ({ children }: { children: React.ReactNode }) => (
@@ -19,8 +24,9 @@ const RequiredLabel = ({ children }: { children: React.ReactNode }) => (
 );
 
 const PreRegistrationPage = () => {
-      const [formData, setFormData] = useState<FormData>({});
-  const [errors, setErrors] = useState<Partial<FormData>>({});
+  const [formData, setFormData] = useState<FormData>({});
+  const [selectedSlot, setSelectedSlot] = useState<AppointmentSlot | null>(null);
+  const [errors, setErrors] = useState<Partial<FormData & { appointment: string }>>({});
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
   const [alertVariant, setAlertVariant] = useState('success');
@@ -30,7 +36,7 @@ const PreRegistrationPage = () => {
     setFormData((prev: FormData) => ({ ...prev, [name]: value }));
     // Clear error for the field being edited
     if (errors[name]) {
-      setErrors((prevErrors: Partial<FormData>) => {
+      setErrors((prevErrors: Partial<FormData & { appointment: string }>) => {
         const newErrors = { ...prevErrors };
         delete newErrors[name];
         return newErrors;
@@ -38,8 +44,20 @@ const PreRegistrationPage = () => {
     }
   };
 
+  const handleSlotSelect = (slot: AppointmentSlot | null) => {
+    setSelectedSlot(slot);
+    // Clear error for the appointment slot when a selection is made
+    if (slot && errors.appointment) {
+      setErrors(prevErrors => {
+        const newErrors = { ...prevErrors };
+        delete newErrors.appointment;
+        return newErrors;
+      });
+    }
+  };
+
   const validateForm = () => {
-        const newErrors: Partial<FormData> = {};
+        const newErrors: Partial<FormData & { appointment: string }> = {};
     // Required fields list
     const requiredFields = [
       { key: 'studentTC', name: 'Öğrenci T.C. Numarası' },
@@ -69,6 +87,11 @@ const PreRegistrationPage = () => {
         newErrors.studentTC = 'T.C. Kimlik Numarası 11 haneli olmalıdır.';
     }
 
+    // Appointment slot validation
+    if (!selectedSlot) {
+      newErrors.appointment = 'Lütfen bir randevu tarihi ve saati seçiniz.';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -77,7 +100,9 @@ const PreRegistrationPage = () => {
     e.preventDefault();
     if (!validateForm()) {
       setAlertVariant('danger');
-      setAlertMessage('Lütfen tüm zorunlu alanları doldurunuz.');
+      // Prioritize the appointment error message if it exists
+      const errorMessage = errors.appointment || 'Lütfen tüm zorunlu alanları doldurunuz ve bir randevu seçiniz.';
+      setAlertMessage(errorMessage);
       setShowAlert(true);
       return;
     }
@@ -85,11 +110,17 @@ const PreRegistrationPage = () => {
     // Clear previous alerts before new submission
     setShowAlert(false);
 
+    const submissionData = {
+      ...formData,
+      appointmentDate: selectedSlot?.date,
+      appointmentTime: selectedSlot?.time,
+    };
+
     try {
       const res = await fetch('/api/applications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
 
       const result = await res.json();
@@ -99,8 +130,9 @@ const PreRegistrationPage = () => {
       }
 
       setAlertVariant('success');
-      setAlertMessage('Başvurunuz başarıyla alınmıştır. Teşekkür ederiz!');
+      setAlertMessage('Başvurunuz ve randevunuz başarıyla alınmıştır. Teşekkür ederiz!');
       setFormData({}); // Reset form
+      setSelectedSlot(null); // Reset selected slot
     } catch (error) {
       if (error instanceof Error) {
         setAlertVariant('danger');
@@ -114,7 +146,6 @@ const PreRegistrationPage = () => {
 
   return (
     <div className="d-flex flex-column min-vh-100">
-      <Header />
       <Container className="my-5 flex-grow-1">
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
@@ -122,6 +153,15 @@ const PreRegistrationPage = () => {
               <h1 className="text-center mb-4">Nuri Akın Anadolu Lisesi Ön Kayıt Formu</h1>
               {showAlert && <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>{alertMessage}</Alert>}
               <Form onSubmit={handleSubmit}>
+                <Card className="mb-4 shadow-sm">
+                  <Card.Body>
+                    <AppointmentScheduler 
+                      onSlotSelect={handleSlotSelect} 
+                      isInvalid={!!errors.appointment} 
+                    />
+                  </Card.Body>
+                </Card>
+
                 <Accordion defaultActiveKey="0" alwaysOpen>
                   {/* Öğrenci Bilgileri */}
                   <Accordion.Item eventKey="0">
@@ -231,7 +271,6 @@ const PreRegistrationPage = () => {
           </Col>
         </Row>
       </Container>
-      <Footer />
     </div>
   );
 };

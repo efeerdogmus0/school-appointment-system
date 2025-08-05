@@ -91,6 +91,8 @@ const AdminPage = () => {
 
   // Map keys to human-readable labels
   const fieldLabels: { [key: string]: string } = {
+    appointmentDate: 'Randevu Tarihi',
+    appointmentTime: 'Randevu Saati',
     studentTC: 'Öğrenci T.C.',
     studentName: 'Öğrenci Adı Soyadı',
     studentDob: 'Öğrenci Doğum Tarihi',
