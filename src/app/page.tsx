@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Container, Row, Col, Form, Button, Accordion, Alert, Card } from 'react-bootstrap';
 import AppointmentScheduler from '@/components/AppointmentScheduler';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -44,17 +44,17 @@ const PreRegistrationPage = () => {
     }
   };
 
-  const handleSlotSelect = (slot: AppointmentSlot | null) => {
+  const handleSlotSelect = useCallback((slot: AppointmentSlot | null) => {
     setSelectedSlot(slot);
     // Clear error for the appointment slot when a selection is made
-    if (slot && errors.appointment) {
+    if (slot) {
       setErrors(prevErrors => {
         const newErrors = { ...prevErrors };
         delete newErrors.appointment;
         return newErrors;
       });
     }
-  };
+  }, []); // Empty dependency array means this function is created only once
 
   const validateForm = () => {
         const newErrors: Partial<FormData & { appointment: string }> = {};
