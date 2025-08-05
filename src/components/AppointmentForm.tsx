@@ -10,7 +10,6 @@ interface AppointmentFormProps {
 const initialFormData = {
   studentName: '',
   studentTC: '',
-  studentSchoolNumber: '',
   parentRelation: 'Anne',
   parentName: '',
   parentOccupation: '',
@@ -71,7 +70,7 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
         newErrors[key] = error;
         if (!firstErrorKey) {
           firstErrorKey = key;
-          if (['studentName', 'studentTC', 'studentSchoolNumber', 'studentClass'].includes(key)) {
+          if (['studentName', 'studentTC'].includes(key)) {
             firstErrorAccordion = '0';
           } else if (['parentRelation', 'parentName', 'parentOccupation', 'parentPhone', 'parentEmail', 'parentAddress'].includes(key)) {
             firstErrorAccordion = '1';
@@ -151,15 +150,6 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
                   <Form.Control.Feedback type="invalid">{formErrors.studentTC}</Form.Control.Feedback>
                 </Form.Group>
               </Col>
-            </Row>
-            <Row>
-              <Col md={6}>
-                <Form.Group className="mb-3" controlId="studentSchoolNumber">
-                  <Form.Label>Okul Numarası</Form.Label>
-                  <Form.Control name="studentSchoolNumber" type="text" value={formData.studentSchoolNumber} onChange={handleChange} />
-                </Form.Group>
-              </Col>
-
             </Row>
           </Accordion.Body>
         </Accordion.Item>

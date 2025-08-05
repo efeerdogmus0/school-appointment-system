@@ -47,9 +47,9 @@ export async function DELETE(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { appointmentDateTime, ogrenciAdSoyad, ogrenciTC, veliTelCep } = body;
+    const { appointmentDateTime, studentName, studentTC, parentPhone } = body;
 
-    if (!appointmentDateTime || !ogrenciAdSoyad || !ogrenciTC || !veliTelCep) {
+    if (!appointmentDateTime || !studentName || !studentTC || !parentPhone) {
       return NextResponse.json({ message: 'Eksik bilgi. Lütfen tüm zorunlu alanları doldurun (Öğrenci Adı, TC, Veli Cep Telefonu).' }, { status: 400 });
     }
 
