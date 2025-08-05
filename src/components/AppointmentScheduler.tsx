@@ -28,6 +28,7 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
   // Tarih formatını YYYY-MM-DD'ye çevirir
   const formatDate = (date: Date) => date.toISOString().split('T')[0];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleDateChange = (value: any) => {
     // Kütüphane tarih aralığı da döndürebilir, biz sadece tek tarih seçimini işliyoruz.
     if (value instanceof Date) {
@@ -62,8 +63,7 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
       <Row>
         <Col md={6} className="d-flex justify-content-center mb-3 mb-md-0">
           <Calendar
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            onChange={handleDateChange as any}
+            onChange={handleDateChange}
             value={selectedDate}
             tileDisabled={tileDisabled}
             minDate={new Date()} // Geçmiş tarihleri devre dışı bırak
