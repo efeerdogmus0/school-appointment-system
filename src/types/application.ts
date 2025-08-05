@@ -48,87 +48,48 @@ export const fieldLabels: { [key: string]: string } = {
 };
 
 export interface ApplicationData {
+  // Base Info
   id: string;
-  [key: string]: any; // Index signature for dynamic access
-  appointmentDate: string;
-  appointmentTime: string;
-  studentName: string;
-  studentTC: string;
-  studentPrevSchool: string;
-  studentPhone: string;
-  studentEmail: string;
-  studentAddress: string;
-  guardianName: string;
-  guardianTC: string;
-  guardianPhoneCell: string;
-  guardianEmail: string;
-  guardianAddressHome: string;
-  guardianProximity: string;
-  fatherName?: string;
-  fatherTC?: string;
-  fatherPhone?: string;
-  fatherEmail?: string;
-  fatherJob?: string;
-  fatherWorkplace?: string;
-  fatherWorkAddress?: string;
-  lgsScore?: number;
-  lgsPercentileTurkey?: number;
-  lgsPercentileCity?: number;
-  mathCorrect?: number;
-  mathIncorrect?: number;
-  mathNet?: number;
-  scienceCorrect?: number;
-  scienceIncorrect?: number;
-  scienceNet?: number;
-  turkishCorrect?: number;
-  turkishIncorrect?: number;
-  turkishNet?: number;
-  historyCorrect?: number;
-  historyIncorrect?: number;
-  historyNet?: number;
-  religionCorrect?: number;
-  religionIncorrect?: number;
-  religionNet?: number;
-  englishCorrect?: number;
-  englishIncorrect?: number;
-  englishNet?: number;
-  schoolPreference?: string;
-  schoolChoiceReason?: string;
-  hobbies?: string;
-  futureGoals?: string;
-}
-  id: string;
-  appointmentDate: string;
-  appointmentTime: string;
-  studentTC: string;
-  studentName: string;
-  studentDob: string;
-  studentPhone: string;
-  guardianName: string;
-  guardianPhoneCell: string;
-  guardianEmail: string;
-  lgsScore?: string;
-  lgsPercentileTurkey?: string;
   createdAt: string;
+  appointmentDate: string;
+  appointmentTime: string;
+
+  // Student Info
+  studentTC: string;
+  studentName: string;
+  studentDob?: string;
   studentPob?: string;
+  studentPhone: string;
+  studentEmail?: string;
+  studentAddress?: string;
   studentPrevSchool?: string;
   studentBloodType?: string;
   studentDisability?: string;
   studentChronicIllness?: string;
   parentsTogether?: string;
   parentsBiological?: string;
+
+  // Guardian Info (Mother, Father, or Legal Guardian)
+  guardianName: string;
+  guardianTC?: string;
   guardianEducation?: string;
   guardianOccupation?: string;
+  guardianPhoneCell: string;
   guardianPhoneHome?: string;
   guardianPhoneWork?: string;
+  guardianEmail: string;
   guardianBloodType?: string;
   guardianAddressHome?: string;
   guardianAddressWork?: string;
   guardianChronicIllness?: string;
   guardianDisability?: string;
   guardianIncome?: string;
+  guardianProximity?: string;
+
+  // Father Info (if different from guardian)
   fatherName?: string;
   fatherAlive?: string;
+  fatherTC?: string;
   fatherEducation?: string;
   fatherOccupation?: string;
   fatherPhoneCell?: string;
@@ -141,24 +102,40 @@ export interface ApplicationData {
   fatherChronicIllness?: string;
   fatherDisability?: string;
   fatherIncome?: string;
-  lgsPercentileCity?: string;
+  
+  // LGS and Exam Info
+  lgsScore?: string | number;
+  lgsPercentileTurkey?: string | number;
+  lgsPercentileCity?: string | number;
   scholarshipWon?: string;
   tubitakInterest?: string;
-  turkishCorrect?: string;
-  turkishWrong?: string;
-  mathCorrect?: string;
-  mathWrong?: string;
-  scienceCorrect?: string;
-  scienceWrong?: string;
-  englishCorrect?: string;
-  englishWrong?: string;
-  religionCorrect?: string;
-  religionWrong?: string;
-  historyCorrect?: string;
-  historyWrong?: string;
+  turkishCorrect?: string | number;
+  turkishWrong?: string | number;
+  turkishNet?: number;
+  mathCorrect?: string | number;
+  mathWrong?: string | number;
+  mathNet?: number;
+  scienceCorrect?: string | number;
+  scienceWrong?: string | number;
+  scienceNet?: number;
+  englishCorrect?: string | number;
+  englishWrong?: string | number;
+  englishNet?: number;
+  religionCorrect?: string | number;
+  religionWrong?: string | number;
+  religionNet?: number;
+  historyCorrect?: string | number;
+  historyWrong?: string | number;
+  historyNet?: number;
+
+  // Opinions and Suggestions
   opinionSchool?: string;
   opinionExpectations?: string;
   opinionSuggestions?: string;
   supportSchool?: string;
   joinPta?: string;
+  schoolPreference?: string;
+  schoolChoiceReason?: string;
+  hobbies?: string;
+  futureGoals?: string;
 }
