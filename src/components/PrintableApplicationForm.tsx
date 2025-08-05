@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
-import { ApplicationData } from '@/types'; // Use the centralized type definition with path alias
+import { ApplicationData } from '@/types/application'; // Import from the correct file
 
 interface PrintableApplicationFormProps {
   formData: ApplicationData;
@@ -14,15 +14,6 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
     return null;
   }
 
-  const formatDate = (dateString: string) => {
-    if (!dateString) return 'Belirtilmemiş';
-    try {
-      return format(new Date(dateString), 'dd MMMM yyyy, EEEE HH:mm', { locale: tr });
-    } catch {
-      return 'Geçersiz Tarih';
-    }
-  };
-
   const formatSimpleDate = (dateString: string) => {
     if (!dateString) return 'Belirtilmemiş';
     try {
@@ -31,6 +22,11 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
       return 'Geçersiz Tarih';
     }
   };
+
+  const renderNet = (correct: any, wrong: any) => {
+    if (correct === undefined && wrong === undefined) return 'Girilmedi';
+    return `${correct || 0}D / ${wrong || 0}Y`;
+  }
 
   return (
     <div ref={ref} className="p-4 bg-white text-dark printable-content">
@@ -46,7 +42,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
           }
           .printable-content {
             font-family: 'Times New Roman', serif;
-            font-size: 9.5pt;
+            font-size: 9pt;
             color: #000000 !important;
           }
           .printable-content h2, .printable-content h3 {
@@ -111,7 +107,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
         <Card>
           <Card.Header>RANDEVU BİLGİLERİ</Card.Header>
           <Card.Body>
-            <p><span className="info-label">Randevu Tarihi ve Saati:</span> <span className="info-value">{formData.appointment ? formatDate(formData.appointment.startTime) : 'Belirtilmemiş'}</span></p>
+            <p><span className="info-label">Randevu Tarihi:</span> <span className="info-value">{formData.appointmentDate}</span></p>
+            <p><span className="info-label">Randevu Saati:</span> <span className="info-value">{formData.appointmentTime}</span></p>
           </Card.Body>
         </Card>
 
@@ -121,7 +118,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
             <Row>
               <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.studentTC}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.studentName}</span></p></Col>
-              <Col xs={6}><p><span className="info-label">Doğum Tarihi:</span> <span className="info-value">{formatSimpleDate(formData.studentDob!)}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Doğum Tarihi:</span> <span className="info-value">{formatSimpleDate(formData.studentDob)}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Doğum Yeri:</span> <span className="info-value">{formData.studentPob}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.studentPhone}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Mezun Olduğu Okul:</span> <span className="info-value">{formData.studentPrevSchool}</span></p></Col>
@@ -130,32 +127,28 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
         </Card>
 
         <Card>
-          <Card.Header>BİRİNCİL VELİ BİLGİLERİ</Card.Header>
+          <Card.Header>VELİ BİLGİLERİ</Card.Header>
           <Card.Body>
             <Row>
-                <Col xs={4}><p><span className="info-label">Yakınlık:</span> <span className="info-value">{formData.primaryGuardianType}</span></p></Col>
-                <Col xs={8}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.primaryGuardianName}</span></p></Col>
-                <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.primaryGuardianTC}</span></p></Col>
-                <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.primaryGuardianPhone}</span></p></Col>
-                <Col xs={6}><p><span className="info-label">E-posta:</span> <span className="info-value">{formData.primaryGuardianEmail}</span></p></Col>
-                <Col xs={6}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.primaryGuardianJob}</span></p></Col>
-                <Col xs={12}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.primaryGuardianWorkAddress || 'Belirtilmemiş'}</span></p></Col>
+                <Col xs={8}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.guardianName}</span></p></Col>
+                <Col xs={4}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.guardianOccupation}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.guardianTC || 'Belirtilmemiş'}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.guardianPhoneCell}</span></p></Col>
+                <Col xs={12}><p><span className="info-label">E-posta:</span> <span className="info-value">{formData.guardianEmail}</span></p></Col>
+                <Col xs={12}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.guardianAddressWork || 'Belirtilmemiş'}</span></p></Col>
             </Row>
           </Card.Body>
         </Card>
 
-        {formData.secondaryGuardianName && (
+        {formData.fatherName && (
             <Card>
-                <Card.Header>İKİNCİL VELİ BİLGİLERİ</Card.Header>
+                <Card.Header>BABA BİLGİLERİ</Card.Header>
                 <Card.Body>
                     <Row>
-                        <Col xs={4}><p><span className="info-label">Yakınlık:</span> <span className="info-value">{formData.secondaryGuardianType}</span></p></Col>
-                        <Col xs={8}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.secondaryGuardianName}</span></p></Col>
-                        <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.secondaryGuardianTC}</span></p></Col>
-                        <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.secondaryGuardianPhone}</span></p></Col>
-                        <Col xs={6}><p><span className="info-label">E-posta:</span> <span className="info-value">{formData.secondaryGuardianEmail}</span></p></Col>
-                        <Col xs={6}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.secondaryGuardianJob}</span></p></Col>
-                        <Col xs={12}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.secondaryGuardianWorkAddress || 'Belirtilmemiş'}</span></p></Col>
+                        <Col xs={8}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.fatherName}</span></p></Col>
+                        <Col xs={4}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.fatherOccupation || 'Belirtilmemiş'}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.fatherTC || 'Belirtilmemiş'}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.fatherPhoneCell || 'Belirtilmemiş'}</span></p></Col>
                     </Row>
                 </Card.Body>
             </Card>
@@ -166,21 +159,21 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
           <Card.Body>
             <Row>
                 <Col xs={4}><p><span className="info-label">LGS Puanı:</span> <span className="info-value">{formData.lgsScore}</span></p></Col>
-                <Col xs={4}><p><span className="info-label">Türkiye %:</span> <span className="info-value">{formData.lgsRankTurkey}</span></p></Col>
-                <Col xs={4}><p><span className="info-label">İl %:</span> <span className="info-value">{formData.lgsRankProvince}</span></p></Col>
+                <Col xs={4}><p><span className="info-label">Türkiye %:</span> <span className="info-value">{formData.lgsPercentileTurkey}</span></p></Col>
+                <Col xs={4}><p><span className="info-label">İl %:</span> <span className="info-value">{formData.lgsPercentileCity || 'N/A'}</span></p></Col>
             </Row>
             <hr />
             <Row>
-                <Col xs={2}><span className="info-label">Türkçe:</span></Col><Col xs={2}><span className="info-value">{formData.examNetTurkishD}D/{formData.examNetTurkishY}Y</span></Col>
-                <Col xs={2}><span className="info-label">Mat.:</span></Col><Col xs={2}><span className="info-value">{formData.examNetMathD}D/{formData.examNetMathY}Y</span></Col>
-                <Col xs={2}><span className="info-label">Fen:</span></Col><Col xs={2}><span className="info-value">{formData.examNetScienceD}D/{formData.examNetScienceY}Y</span></Col>
-                <Col xs={2}><span className="info-label">İnkılap:</span></Col><Col xs={2}><span className="info-value">{formData.examNetSocialD}D/{formData.examNetSocialY}Y</span></Col>
-                <Col xs={2}><span className="info-label">Din K.:</span></Col><Col xs={2}><span className="info-value">{formData.examNetReligionD}D/{formData.examNetReligionY}Y</span></Col>
-                <Col xs={2}><span className="info-label">Y. Dil:</span></Col><Col xs={2}><span className="info-value">{formData.examNetForeignLangD}D/{formData.examNetForeignLangY}Y</span></Col>
+                <Col xs={2}><span className="info-label">Türkçe:</span></Col><Col xs={2}><span className="info-value">{renderNet(formData.turkishCorrect, formData.turkishWrong)}</span></Col>
+                <Col xs={2}><span className="info-label">Mat.:</span></Col><Col xs={2}><span className="info-value">{renderNet(formData.mathCorrect, formData.mathWrong)}</span></Col>
+                <Col xs={2}><span className="info-label">Fen:</span></Col><Col xs={2}><span className="info-value">{renderNet(formData.scienceCorrect, formData.scienceWrong)}</span></Col>
+                <Col xs={2}><span className="info-label">İnkılap:</span></Col><Col xs={2}><span className="info-value">{renderNet(formData.historyCorrect, formData.historyWrong)}</span></Col>
+                <Col xs={2}><span className="info-label">Din K.:</span></Col><Col xs={2}><span className="info-value">{renderNet(formData.religionCorrect, formData.religionWrong)}</span></Col>
+                <Col xs={2}><span className="info-label">Y. Dil:</span></Col><Col xs={2}><span className="info-value">{renderNet(formData.englishCorrect, formData.englishWrong)}</span></Col>
             </Row>
              <hr />
             <Row>
-                <Col xs={6}><p><span className="info-label">Bursluluk Puanı:</span> <span className="info-value">{formData.scholarshipScore || 'Girilmedi'}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">Bursluluk Durumu:</span> <span className="info-value">{formData.scholarshipWon || 'Kazanmadı'}</span></p></Col>
                 <Col xs={6}><p><span className="info-label">TÜBİTAK İlgi Alanı:</span> <span className="info-value">{formData.tubitakInterest || 'Yok'}</span></p></Col>
             </Row>
           </Card.Body>
@@ -189,8 +182,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
         <Card>
           <Card.Header>EK BİLGİLER</Card.Header>
           <Card.Body>
-            <p><span className="info-label">Okulumuzu Nereden Duydunuz:</span> <span className="info-value">{formData.discoveryChannel}</span></p>
-            <p><span className="info-label">Görüş ve Öneriler:</span> <span className="info-value">{formData.additionalNotes || 'Yok'}</span></p>
+            <p><span className="info-label">Okulumuzu Tercih Etme Nedeni:</span> <span className="info-value">{formData.schoolChoiceReason || 'Belirtilmemiş'}</span></p>
+            <p><span className="info-label">Görüş ve Öneriler:</span> <span className="info-value">{formData.opinionSchool || 'Yok'}</span></p>
           </Card.Body>
         </Card>
 
