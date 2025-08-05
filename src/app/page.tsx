@@ -145,7 +145,6 @@ const PreRegistrationPage = () => {
   };
 
   return (
-    <div className="d-flex flex-column min-vh-100">
       <Container className="my-5 flex-grow-1">
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
@@ -271,7 +270,6 @@ const PreRegistrationPage = () => {
           </Col>
         </Row>
       </Container>
-    </div>
   );
 };
 
