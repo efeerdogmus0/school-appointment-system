@@ -181,9 +181,9 @@ const PreRegistrationPage = () => {
   };
 
   return (
-      <Container className="my-5 flex-grow-1">
+      <Container fluid className="my-5 flex-grow-1" style={{ maxWidth: '1400px', margin: '0 auto' }}>
         <Row className="justify-content-center">
-          <Col md={10} lg={8}>
+          <Col md={11} lg={10} xl={9}>
             <Card className="p-4 shadow-sm">
               <h1 className="text-center mb-4">Nuri Akın Anadolu Lisesi Kayıt Randevu Formu</h1>
               {showAlert && <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>{alertMessage}</Alert>}
