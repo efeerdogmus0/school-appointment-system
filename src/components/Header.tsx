@@ -11,8 +11,8 @@ const Header = () => {
           <Image
             src="/logo.png"
             alt="Nişantaşı Nuri Akın Anadolu Lisesi Logosu"
-            width={50}
-            height={50}
+            width={70}
+            height={70}
             priority
             className="me-3"
           />

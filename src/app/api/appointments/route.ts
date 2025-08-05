@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import fs from 'fs/promises';
 import path from 'path';
 
-const appointmentsFilePath = path.join(process.cwd(), 'src', 'data', 'appointments.json');
+const appointmentsFilePath = path.join(process.cwd(), 'db.json');
 
 async function getAppointments() {
   try {

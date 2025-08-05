@@ -16,6 +16,8 @@ const Footer = () => {
         </div>
         <div className="mt-3 text-muted">
           <small>&copy; {new Date().getFullYear()} - Tüm hakları saklıdır.</small>
+          <br />
+          <small>Bu websitesi okulumuz robotik takımı öğrencileri tarafından kodlanmıştır.</small>
         </div>
       </Container>
     </footer>
