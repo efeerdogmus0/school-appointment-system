@@ -1,125 +1,201 @@
 import React, { forwardRef } from 'react';
-import { Row, Col, Image } from 'react-bootstrap';
-import { ApplicationData } from '@/types/application';
+import { Container, Row, Col, Card } from 'react-bootstrap';
+import { format } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
-interface PrintableFormProps {
-  application: ApplicationData;
+interface PrintableApplicationFormProps {
+  formData: any;
 }
 
-// Helper to display data or a placeholder
-const DataField = ({ label, value, required = false }: { label: string; value: string | number | boolean | null | undefined; required?: boolean }) => (
-  <div className="d-flex justify-content-between border-bottom py-1">
-    <span className="fw-bold">{label}{required && <span className="text-danger">*</span>}:</span>
-    <span>{value || 'N/A'}</span>
-  </div>
-);
+const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplicationFormProps>(({ formData }, ref) => {
+  if (!formData) {
+    return null;
+  }
 
-const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableFormProps>(({ application }, ref) => {
+  const formatDate = (dateString: string) => {
+    if (!dateString) return 'Belirtilmemiş';
+    try {
+      return format(new Date(dateString), 'dd MMMM yyyy, EEEE HH:mm', { locale: tr });
+    } catch (error) {
+      return 'Geçersiz Tarih';
+    }
+  };
+
+  const formatSimpleDate = (dateString: string) => {
+    if (!dateString) return 'Belirtilmemiş';
+    try {
+      return format(new Date(dateString), 'dd/MM/yyyy', { locale: tr });
+    } catch (error) {
+      return 'Geçersiz Tarih';
+    }
+  };
+
   return (
-    // This wrapper is positioned off-screen to be captured by html2canvas
-    <div 
-      ref={ref} 
-      style={{ 
-        position: 'absolute', 
-        left: '-9999px', 
-        top: 0, 
-        width: '210mm', 
-        minHeight: '297mm', 
-        background: 'white', 
-        color: 'black', 
-        zIndex: -1, // Ensure it's not interactive
-        padding: '20px' 
-      }}
-    >
-        {/* Header */}
-        <Row className="align-items-center mb-4 text-center">
-          <Col xs={12}>
-            <Image src="/logo.png" alt="Okul Logosu" style={{ maxWidth: '100px' }} className="mb-3" />
-            <h4 className="fw-bold">NİŞANTAŞI NURİ AKIN ANADOLU LİSESİ</h4>
-            <h5 className="fw-bold">ÖN KAYIT BAŞVURU FORMU</h5>
+    <div ref={ref} className="p-4 bg-white text-dark printable-content">
+        <style type="text/css" media="print">
+        {`
+          @page { 
+            size: A4; 
+            margin: 15mm; 
+          }
+          body {
+            -webkit-print-color-adjust: exact; 
+            background-color: #ffffff !important;
+          }
+          .printable-content {
+            font-family: 'Times New Roman', serif;
+            font-size: 9.5pt;
+            color: #000000 !important;
+          }
+          .printable-content h2, .printable-content h3 {
+            font-family: 'Arial Black', sans-serif;
+            text-align: center;
+            margin: 0;
+            color: #000000 !important;
+          }
+          .printable-content h2 { font-size: 16pt; }
+          .printable-content h3 { font-size: 14pt; font-weight: normal; margin-bottom: 10px; }
+          .printable-content .card {
+            border: 1px solid #dee2e6 !important;
+            margin-bottom: 8px !important;
+            break-inside: avoid;
+          }
+          .printable-content .card-header {
+            font-size: 11pt;
+            font-weight: bold;
+            background-color: #e9ecef !important;
+            padding: 4px 8px;
+            border-bottom: 1px solid #dee2e6 !important;
+            color: #000000 !important;
+          }
+          .printable-content .card-body {
+            padding: 8px;
+          }
+          .printable-content p {
+            margin-bottom: 2px;
+          }
+          .printable-content .info-label {
+            font-weight: bold;
+          }
+          .printable-content .info-value {
+            font-weight: normal;
+          }
+          .printable-content .row {
+            display: flex;
+            flex-wrap: wrap;
+          }
+          .printable-content .col-4, .printable-content .col-6, .printable-content .col-12, .printable-content .col-2, .printable-content .col-10 {
+            padding: 1px 5px;
+          }
+          .printable-content hr {
+            margin: 4px 0;
+            border-top: 1px solid #ccc;
+          }
+          .printable-content footer {
+            font-size: 8pt;
+            text-align: center;
+            margin-top: 15px;
+          }
+        `}
+        </style>
+
+      <Container>
+        <header className="text-center mb-4">
+          <img src="/logo-nnl.png" alt="Okul Logosu" style={{ maxWidth: '120px', marginBottom: '10px' }} />
+          <h2>NİŞANTAŞI NURİ AKIN ANADOLU LİSESİ</h2>
+          <h3>ÖN KAYIT BAŞVURU FORMU</h3>
+        </header>
+
+        <Card>
+          <Card.Header>RANDEVU BİLGİLERİ</Card.Header>
+          <Card.Body>
+            <p><span className="info-label">Randevu Tarihi ve Saati:</span> <span className="info-value">{formData.appointment ? formatDate(formData.appointment.startTime) : 'Belirtilmemiş'}</span></p>
+          </Card.Body>
+        </Card>
+
+        <Card>
+          <Card.Header>ÖĞRENCİ BİLGİLERİ</Card.Header>
+          <Card.Body>
+            <Row>
+              <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.studentTC}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.studentName}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Doğum Tarihi:</span> <span className="info-value">{formatSimpleDate(formData.studentDob)}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Doğum Yeri:</span> <span className="info-value">{formData.studentPob}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.studentPhone}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Mezun Olduğu Okul:</span> <span className="info-value">{formData.studentPrevSchool}</span></p></Col>
+            </Row>
+          </Card.Body>
+        </Card>
+
+        <Card>
+          <Card.Header>BİRİNCİL VELİ BİLGİLERİ</Card.Header>
+          <Card.Body>
+            <Row>
+                <Col xs={4}><p><span className="info-label">Yakınlık:</span> <span className="info-value">{formData.primaryGuardianType}</span></p></Col>
+                <Col xs={8}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.primaryGuardianName}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.primaryGuardianTC}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.primaryGuardianPhone}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">E-posta:</span> <span className="info-value">{formData.primaryGuardianEmail}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.primaryGuardianJob}</span></p></Col>
+                <Col xs={12}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.primaryGuardianWorkAddress || 'Belirtilmemiş'}</span></p></Col>
+            </Row>
+          </Card.Body>
+        </Card>
+
+        {formData.secondaryGuardianName && (
+            <Card>
+                <Card.Header>İKİNCİL VELİ BİLGİLERİ</Card.Header>
+                <Card.Body>
+                    <Row>
+                        <Col xs={4}><p><span className="info-label">Yakınlık:</span> <span className="info-value">{formData.secondaryGuardianType}</span></p></Col>
+                        <Col xs={8}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.secondaryGuardianName}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.secondaryGuardianTC}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.secondaryGuardianPhone}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">E-posta:</span> <span className="info-value">{formData.secondaryGuardianEmail}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.secondaryGuardianJob}</span></p></Col>
+                        <Col xs={12}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.secondaryGuardianWorkAddress || 'Belirtilmemiş'}</span></p></Col>
+                    </Row>
+                </Card.Body>
+            </Card>
+        )}
+
+        <Card>
+          <Card.Header>SINAV VE BAŞVURU BİLGİLERİ</Card.Header>
+          <Card.Body>
+            <Row>
+                <Col xs={4}><p><span className="info-label">LGS Puanı:</span> <span className="info-value">{formData.lgsScore}</span></p></Col>
+                <Col xs={4}><p><span className="info-label">Türkiye %:</span> <span className="info-value">{formData.lgsRankTurkey}</span></p></Col>
+                <Col xs={4}><p><span className="info-label">İl %:</span> <span className="info-value">{formData.lgsRankProvince}</span></p></Col>
+            </Row>
             <hr />
-          </Col>
-          <Col xs={12} className="text-center">
-            <div><strong>Başvuru Tarihi:</strong> {new Date().toLocaleDateString('tr-TR')}</div>
-            <div><strong>Talep Edilen Randevu:</strong> {application.appointmentDate} - {application.appointmentTime}</div>
-            <hr />
-          </Col>
-        </Row>
+            <Row>
+                <Col xs={2}><span className="info-label">Türkçe:</span></Col><Col xs={2}><span className="info-value">{formData.examNetTurkishD}D/{formData.examNetTurkishY}Y</span></Col>
+                <Col xs={2}><span className="info-label">Mat.:</span></Col><Col xs={2}><span className="info-value">{formData.examNetMathD}D/{formData.examNetMathY}Y</span></Col>
+                <Col xs={2}><span className="info-label">Fen:</span></Col><Col xs={2}><span className="info-value">{formData.examNetScienceD}D/{formData.examNetScienceY}Y</span></Col>
+                <Col xs={2}><span className="info-label">İnkılap:</span></Col><Col xs={2}><span className="info-value">{formData.examNetSocialD}D/{formData.examNetSocialY}Y</span></Col>
+                <Col xs={2}><span className="info-label">Din K.:</span></Col><Col xs={2}><span className="info-value">{formData.examNetReligionD}D/{formData.examNetReligionY}Y</span></Col>
+                <Col xs={2}><span className="info-label">Y. Dil:</span></Col><Col xs={2}><span className="info-value">{formData.examNetForeignLangD}D/{formData.examNetForeignLangY}Y</span></Col>
+            </Row>
+             <hr />
+            <Row>
+                <Col xs={6}><p><span className="info-label">Bursluluk Puanı:</span> <span className="info-value">{formData.scholarshipScore || 'Girilmedi'}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">TÜBİTAK İlgi Alanı:</span> <span className="info-value">{formData.tubitakInterest || 'Yok'}</span></p></Col>
+            </Row>
+          </Card.Body>
+        </Card>
 
-        {/* Main Content */}
-        <div className="border p-3">
-          <Row>
-            {/* Left Column */}
-            <Col xs={6} className="border-end pe-3">
-              <h6 className="bg-light p-2 border mb-3 text-center">Öğrenci Bilgileri</h6>
-              <DataField label="T.C. Numarası" value={application.studentTC} required />
-              <DataField label="Adı Soyadı" value={application.studentName} required />
-              <DataField label="Doğum Tarihi" value={application.studentDob} required />
-              <DataField label="Doğum Yeri" value={application.studentPob} required />
-              <DataField label="Cep Telefonu" value={application.studentPhone} required />
-              <DataField label="Mezun Olduğu Okul" value={application.studentPrevSchool} required />
-              <DataField label="Kan Grubu" value={application.studentBloodType} required />
-              <DataField label="Engel Durumu" value={application.studentDisability} />
-              <DataField label="Sürekli Hastalık" value={application.studentChronicIllness} />
-              <DataField label="Anne-Baba Birlikte mi?" value={application.parentsTogether} required />
-              <DataField label="Anne-Baba Öz mü?" value={application.parentsBiological} required />
-            </Col>
+        <Card>
+          <Card.Header>EK BİLGİLER</Card.Header>
+          <Card.Body>
+            <p><span className="info-label">Okulumuzu Nereden Duydunuz:</span> <span className="info-value">{formData.discoveryChannel}</span></p>
+            <p><span className="info-label">Görüş ve Öneriler:</span> <span className="info-value">{formData.additionalNotes || 'Yok'}</span></p>
+          </Card.Body>
+        </Card>
 
-            {/* Right Column */}
-            <Col xs={6} className="ps-3">
-              <h6 className="bg-light p-2 border mb-3 text-center">Veli Bilgileri (Anne, Baba veya Vasi)</h6>
-              <DataField label="Adı Soyadı" value={application.guardianName} required />
-              <DataField label="Öğrenim Durumu" value={application.guardianEducation} required />
-              <DataField label="Mesleği" value={application.guardianOccupation} required />
-              <DataField label="Cep Telefonu" value={application.guardianPhoneCell} required />
-              <DataField label="E-Posta" value={application.guardianEmail} required />
-              <DataField label="Ev Adresi" value={application.guardianAddressHome} required />
-              <DataField label="İş Adresi" value={application.guardianAddressWork} required />
-              <DataField label="Aylık Gelir" value={application.guardianIncome} required />
-            </Col>
-          </Row>
-
-          <hr />
-
-          <Row>
-            <Col xs={12}>
-                <h6 className="bg-light p-2 border mb-3 text-center">LGS ve Sınav Bilgileri</h6>
-            </Col>
-            {/* LGS Info */}
-            <Col xs={6} className="border-end pe-3">
-              <DataField label="LGS Puanı" value={application.lgsScore} required />
-              <DataField label="Türkiye Geneli %" value={application.lgsPercentileTurkey} required />
-              <DataField label="İl Geneli %" value={application.lgsPercentileCity} />
-              <DataField label="Bursluluk Kazandı mı?" value={application.scholarshipWon} />
-              <DataField label="TÜBİTAK İlgisi" value={application.tubitakInterest} />
-            </Col>
-
-            {/* Exam Scores */}
-            <Col xs={6} className="ps-3">
-              <DataField label="Türkçe D/Y" value={`${application.turkishCorrect || '0'} / ${application.turkishWrong || '0'}`} />
-              <DataField label="Matematik D/Y" value={`${application.mathCorrect || '0'} / ${application.mathWrong || '0'}`} />
-              <DataField label="Fen Bil. D/Y" value={`${application.scienceCorrect || '0'} / ${application.scienceWrong || '0'}`} />
-              <DataField label="İngilizce D/Y" value={`${application.englishCorrect || '0'} / ${application.englishWrong || '0'}`} />
-              <DataField label="Din Kültürü D/Y" value={`${application.religionCorrect || '0'} / ${application.religionWrong || '0'}`} />
-              <DataField label="T.C. İnkılap D/Y" value={`${application.historyCorrect || '0'} / ${application.historyWrong || '0'}`} />
-            </Col>
-          </Row>
-          
-          <hr />
-
-          <Row>
-            <Col xs={12}>
-                <h6 className="bg-light p-2 border mb-3 text-center">Görüş ve Öneriler</h6>
-                <p className="mb-1"><strong>Okul Hakkındaki Görüş:</strong> {application.opinionSchool || 'N/A'}</p>
-                <p className="mb-1"><strong>Okuldan Beklentiler:</strong> {application.opinionExpectations || 'N/A'}</p>
-                <DataField label="Okula Destek Olmak İster misiniz?" value={application.supportSchool} required />
-                <DataField label="Okul Aile Birliğinde Görev Almak İster misiniz?" value={application.joinPta} required />
-            </Col>
-          </Row>
-        </div>
         <footer className="mt-4 text-muted text-center small">
           <p>Bu form, Nişantaşı Nuri Akın Anadolu Lisesi Robotik Kulübü tarafından geliştirilen randevu sistemi tarafından oluşturulmuştur.</p>
         </footer>
+      </Container>
     </div>
   );
 });
