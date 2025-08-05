@@ -1,10 +1,9 @@
-import React from 'react';
-import { ApplicationData } from '@/types/application';
+import React, { forwardRef } from 'react';
 import { Row, Col, Image } from 'react-bootstrap';
+import { ApplicationData } from '@/types/application';
 
 interface PrintableFormProps {
   application: ApplicationData;
-  formRef: React.Ref<HTMLDivElement>;
 }
 
 // Helper to display data or a placeholder
@@ -15,23 +14,35 @@ const DataField = ({ label, value }: { label: string; value: string | number | b
   </div>
 );
 
-const PrintableApplicationForm: React.FC<PrintableFormProps> = ({ application, formRef }) => {
+const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableFormProps>(({ application }, ref) => {
   return (
-    // This wrapper is positioned off-screen
-    <div style={{ position: 'absolute', left: '-9999px', top: 0, width: '210mm', height: '297mm', background: 'white' }}>
-      <div ref={formRef} className="p-5 bg-white text-black">
+    // This wrapper is positioned off-screen to be captured by html2canvas
+    <div 
+      ref={ref} 
+      style={{ 
+        position: 'absolute', 
+        left: '-9999px', 
+        top: 0, 
+        width: '210mm', 
+        minHeight: '297mm', 
+        background: 'white', 
+        color: 'black', 
+        zIndex: -1, // Ensure it's not interactive
+        padding: '20px' 
+      }}
+    >
         {/* Header */}
-        <Row className="align-items-center mb-4">
-          <Col xs={4} className="text-center">
-            <Image src="/logo.png" alt="Okul Logosu" style={{ maxWidth: '100px' }} />
-          </Col>
-          <Col xs={4} className="text-center">
+        <Row className="align-items-center mb-4 text-center">
+          <Col xs={12}>
+            <Image src="/logo.png" alt="Okul Logosu" style={{ maxWidth: '100px' }} className="mb-3" />
             <h4 className="fw-bold">NİŞANTAŞI NURİ AKIN ANADOLU LİSESİ</h4>
             <h5 className="fw-bold">ÖN KAYIT BAŞVURU FORMU</h5>
+            <hr />
           </Col>
-          <Col xs={4} className="text-end">
-            <div><strong>Tarih:</strong> {new Date().toLocaleDateString('tr-TR')}</div>
-            <div><strong>Randevu:</strong> {application.appointmentDate} - {application.appointmentTime}</div>
+          <Col xs={12} className="text-center">
+            <div><strong>Başvuru Tarihi:</strong> {new Date().toLocaleDateString('tr-TR')}</div>
+            <div><strong>Talep Edilen Randevu:</strong> {application.appointmentDate} - {application.appointmentTime}</div>
+            <hr />
           </Col>
         </Row>
 
@@ -40,7 +51,7 @@ const PrintableApplicationForm: React.FC<PrintableFormProps> = ({ application, f
           <Row>
             {/* Left Column */}
             <Col xs={6} className="border-end pe-3">
-              <h6 className="bg-light p-2 border mb-3">Öğrenci Bilgileri</h6>
+              <h6 className="bg-light p-2 border mb-3 text-center">Öğrenci Bilgileri</h6>
               <DataField label="T.C. Numarası" value={application.studentTC} />
               <DataField label="Adı Soyadı" value={application.studentName} />
               <DataField label="Doğum Tarihi" value={application.studentDob} />
@@ -56,7 +67,7 @@ const PrintableApplicationForm: React.FC<PrintableFormProps> = ({ application, f
 
             {/* Right Column */}
             <Col xs={6} className="ps-3">
-              <h6 className="bg-light p-2 border mb-3">Veli Bilgileri (Anne, Baba veya Vasi)</h6>
+              <h6 className="bg-light p-2 border mb-3 text-center">Veli Bilgileri (Anne, Baba veya Vasi)</h6>
               <DataField label="Adı Soyadı" value={application.guardianName} />
               <DataField label="Öğrenim Durumu" value={application.guardianEducation} />
               <DataField label="Mesleği" value={application.guardianOccupation} />
@@ -72,7 +83,7 @@ const PrintableApplicationForm: React.FC<PrintableFormProps> = ({ application, f
 
           <Row>
             <Col xs={12}>
-                <h6 className="bg-light p-2 border mb-3">LGS ve Sınav Bilgileri</h6>
+                <h6 className="bg-light p-2 border mb-3 text-center">LGS ve Sınav Bilgileri</h6>
             </Col>
             {/* LGS Info */}
             <Col xs={6} className="border-end pe-3">
@@ -98,19 +109,22 @@ const PrintableApplicationForm: React.FC<PrintableFormProps> = ({ application, f
 
           <Row>
             <Col xs={12}>
-                <h6 className="bg-light p-2 border mb-3">Görüş ve Öneriler</h6>
-                <p><strong>Okul Hakkındaki Görüş:</strong> {application.opinionSchool || 'N/A'}</p>
-                <p><strong>Okuldan Beklentiler:</strong> {application.opinionExpectations || 'N/A'}</p>
-                <p><strong>Okul İçin Öneriler:</strong> {application.opinionSuggestions || 'N/A'}</p>
+                <h6 className="bg-light p-2 border mb-3 text-center">Görüş ve Öneriler</h6>
+                <p className="mb-1"><strong>Okul Hakkındaki Görüş:</strong> {application.opinionSchool || 'N/A'}</p>
+                <p className="mb-1"><strong>Okuldan Beklentiler:</strong> {application.opinionExpectations || 'N/A'}</p>
+                <p className="mb-1"><strong>Okul İçin Öneriler:</strong> {application.opinionSuggestions || 'N/A'}</p>
                 <DataField label="Okula Destek Olmak İster misiniz?" value={application.supportSchool} />
                 <DataField label="Okul Aile Birliğinde Görev Almak İster misiniz?" value={application.joinPta} />
             </Col>
           </Row>
-
         </div>
-      </div>
+        <footer className="mt-4 text-muted text-center small">
+          <p>Bu form, Nişantaşı Nuri Akın Anadolu Lisesi için Efe Erdoğmuş tarafından geliştirilen randevu sistemi tarafından oluşturulmuştur.</p>
+        </footer>
     </div>
   );
-};
+});
+
+PrintableApplicationForm.displayName = 'PrintableApplicationForm';
 
 export default PrintableApplicationForm;

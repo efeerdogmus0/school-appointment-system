@@ -110,41 +110,32 @@ const AdminPage = () => {
   useEffect(() => {
     if (printingApplication && printableFormRef.current) {
       const element = printableFormRef.current;
-
-      const onClone = (document: Document) => {
-        const images = document.querySelectorAll('img');
-        const promises = Array.from(images).map(img => {
-          if (img.complete) return Promise.resolve();
-          return new Promise<void>(resolve => {
-            img.onload = () => resolve();
-            img.onerror = () => resolve(); // Resolve even on error to not block PDF generation
+      
+      // A small delay to ensure all content, especially images, are fully rendered.
+      setTimeout(() => {
+        html2canvas(element, { 
+          scale: 2, 
+          useCORS: true, // Important for external images
+          allowTaint: true,
+        })
+          .then(canvas => {
+            if (canvas.width === 0 || canvas.height === 0) {
+              throw new Error('Canvas is empty. The component might not be rendering correctly or is hidden.');
+            }
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${printingApplication.studentName}_basvuru.pdf`);
+          })
+          .catch(err => {
+            setError(`PDF oluşturulurken bir hata oluştu: ${err.message}`);
+          })
+          .finally(() => {
+            setPrintingApplication(null); // Clean up state after operation
           });
-        });
-        return Promise.all(promises);
-      };
-
-      html2canvas(element, { 
-        scale: 2, 
-        useCORS: true,
-        onclone: onClone,
-      })
-        .then(canvas => {
-          if (canvas.width === 0 || canvas.height === 0) {
-            throw new Error('Canvas is empty. The component might not be rendering correctly.');
-          }
-          const imgData = canvas.toDataURL('image/png');
-          const pdf = new jsPDF('p', 'mm', 'a4');
-          const pdfWidth = pdf.internal.pageSize.getWidth();
-          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-          pdf.save(`${printingApplication.studentName}_basvuru.pdf`);
-        })
-        .catch(err => {
-          setError(`PDF oluşturulurken bir hata oluştu: ${err.message}`);
-        })
-        .finally(() => {
-          setPrintingApplication(null); // Clean up in any case
-        });
+      }, 500); // 500ms delay
     }
   }, [printingApplication]);
 
@@ -348,14 +339,13 @@ const AdminPage = () => {
         </Modal.Body>
       </Modal>
 
-       {/* Printable Form Container - Hidden */}
-      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -1, opacity: 0, pointerEvents: 'none', width: '100%', height: 'auto' }}>
-        {printingApplication && (
-            <div ref={printableFormRef}>
-                <PrintableApplicationForm application={printingApplication} formRef={printableFormRef} />
-            </div>
-        )}
-      </div>
+      {/* Conditionally render the printable form off-screen */}
+      {printingApplication && (
+        <PrintableApplicationForm 
+          ref={printableFormRef} 
+          application={printingApplication} 
+        />
+      )}
 
     </Container>
   );
