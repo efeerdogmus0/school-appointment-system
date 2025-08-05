@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Container, Button, Alert, Form, Modal, Accordion, Row, Col, Card } from 'react-bootstrap';
 import { ApplicationData } from '@/types/application';
 import PrintableApplicationForm from '@/components/PrintableApplicationForm';
@@ -103,25 +103,28 @@ const AdminPage = () => {
     }
   };
 
-  const handleGeneratePdf = async (app: ApplicationData) => {
+  const handleGeneratePdf = (app: ApplicationData) => {
     setPrintingApplication(app);
-    // Use a timeout to allow the printable component to re-render with the new data
-    setTimeout(() => {
-      if (!printableFormRef.current) {
-        setError('PDF oluşturma hatası: Form referansı bulunamadı.');
-        return;
-      }
-      html2canvas(printableFormRef.current, { scale: 2 }).then(canvas => {
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF('p', 'mm', 'a4');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`${app.studentName}_basvuru.pdf`);
-        setPrintingApplication(null); // Clean up
-      });
-    }, 500);
   };
+
+  useEffect(() => {
+    if (printingApplication && printableFormRef.current) {
+      html2canvas(printableFormRef.current, { scale: 2, useCORS: true })
+        .then(canvas => {
+          const imgData = canvas.toDataURL('image/png');
+          const pdf = new jsPDF('p', 'mm', 'a4');
+          const pdfWidth = pdf.internal.pageSize.getWidth();
+          const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+          pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+          pdf.save(`${printingApplication.studentName}_basvuru.pdf`);
+          setPrintingApplication(null); // Clean up after generation
+        })
+        .catch(err => {
+          setError('PDF oluşturulurken bir hata oluştu: ' + err.message);
+          setPrintingApplication(null);
+        });
+    }
+  }, [printingApplication]);
 
   if (!isAuthenticated) {
     return (
