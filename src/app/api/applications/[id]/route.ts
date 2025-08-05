@@ -38,11 +38,11 @@ export async function DELETE(
  */
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const id = context.params.id; // Get ID from context
-    const body: ApplicationData = await request.json();
+    const id = params.id; // Get ID from the dynamic route segment
+    const body = await request.json(); // Hata ayıklama için tip ataması kaldırıldı
 
     if (!id) {
       return NextResponse.json({ message: 'Güncellenecek başvuru IDsi belirtilmedi.' }, { status: 400 });
