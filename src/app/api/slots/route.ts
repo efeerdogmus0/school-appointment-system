@@ -1,12 +1,6 @@
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
-
-// Bu arayüz, KV'de saklanan randevu objesinin yapısını tanımlar.
-interface ApplicationData {
-  appointmentDate?: string;
-  appointmentTime?: string;
-  // Diğer alanlar buraya eklenebilir ama bu endpoint için gerekli değil
-}
+import { ApplicationData } from '@/types/application';
 
 /**
  * Belirli bir tarihteki dolu randevu saatlerini döndürür.
