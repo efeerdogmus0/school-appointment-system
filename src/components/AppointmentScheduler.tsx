@@ -163,8 +163,8 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
         </Col>
       </Row>
       {selectedTime && selectedDate && (
-        <Alert variant="success" className="mt-4 text-center fw-bold">
-          Seçilen Randevu: {new Date(selectedDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })} - Saat: {selectedTime}
+        <Alert variant="success" className="mt-3 text-center">
+          <strong>Seçim tamamlandı:</strong> {new Date(selectedDate).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })} - <strong>Saat:</strong> {selectedTime}. Lütfen formu doldurmaya devam edin.
         </Alert>
       )}
       {isInvalid && !selectedTime && <div className="text-danger mt-2 text-center">Lütfen bir randevu tarihi ve saati seçiniz.</div>}
