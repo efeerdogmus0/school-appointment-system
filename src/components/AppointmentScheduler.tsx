@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { Row, Col, Button, Alert, Spinner } from 'react-bootstrap';
-import Calendar from 'react-calendar';
+import Calendar, { type CalendarProps } from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 
 // --- Ayarlar ve Yardımcı Fonksiyonlar ---
@@ -20,6 +20,8 @@ interface AppointmentSchedulerProps {
   onSlotSelect: (slot: { date: string; time: string } | null) => void;
   isInvalid: boolean;
 }
+
+type CalendarValue = Parameters<NonNullable<CalendarProps['onChange']>>[0];
 
 const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerProps) => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date(AVAILABLE_DATES[0]));
@@ -72,7 +74,7 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
     onSlotSelect(null);
   }, [selectedDate, onSlotSelect]);
 
-  const handleDateChange = (value: any) => {
+    const handleDateChange = (value: CalendarValue) => {
     if (value instanceof Date) setSelectedDate(value);
   };
 
