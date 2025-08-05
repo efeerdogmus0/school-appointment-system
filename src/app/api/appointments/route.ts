@@ -53,19 +53,22 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'Eksik bilgi. Lütfen tüm zorunlu alanları doldurun (Öğrenci Adı, TC, Veli Cep Telefonu).' }, { status: 400 });
     }
 
-    const appointments = await getAppointments();
+    let appointments = await getAppointments();
 
-    if (Array.isArray(appointments)) {
-      const isDuplicate = appointments.some((apt: { appointmentDateTime: string | number | Date }) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
-      if (isDuplicate) {
-        return NextResponse.json({ message: 'Bu saat zaten dolu. Lütfen başka bir saat seçin.' }, { status: 409 });
-      }
+    // Gelen verinin bir dizi olduğundan emin ol, değilse boş bir dizi ile başla.
+    if (!Array.isArray(appointments)) {
+      appointments = [];
+    }
+
+    const isDuplicate = appointments.some((apt: { appointmentDateTime: string | number | Date }) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
+    if (isDuplicate) {
+      return NextResponse.json({ message: 'Bu saat zaten dolu. Lütfen başka bir saat seçin.' }, { status: 409 });
     }
 
     const newAppointment = {
-      id: Date.now(),
+      id: Date.now().toString(),
       createdAt: new Date().toISOString(),
-      ...body
+      ...body,
     };
 
     appointments.push(newAppointment);
