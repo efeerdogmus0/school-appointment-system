@@ -1,17 +1,23 @@
 import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
 import { ApplicationData } from '@/types/application';
+
+// Define a specific type for the route context to help with type resolution
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
 
 /**
  * Handles DELETE requests to delete a specific application by its ID.
- * @param request - The incoming NextRequest.
- * @param params - The route parameters, containing the application ID.
+ * @param request - The incoming request.
+ * @param context - The route context, containing the application ID.
  * @returns A NextResponse with the result of the operation.
  */
 export async function DELETE(
-  request: Request, // Use standard Request type
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: RouteContext
 ) {
   try {
     const id = params.id; // Get ID from the dynamic route segment
@@ -38,8 +44,8 @@ export async function DELETE(
  * @returns A NextResponse with the updated application data.
  */
 export async function PUT(
-  request: Request, // Use standard Request type
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: RouteContext
 ) {
   try {
     const id = params.id; // Get ID from the dynamic route segment
