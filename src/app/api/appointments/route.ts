@@ -55,9 +55,11 @@ export async function POST(request: Request) {
 
     const appointments = await getAppointments();
 
-    const isDuplicate = appointments.some((apt: { appointmentDateTime: string | number | Date }) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
-    if (isDuplicate) {
-      return NextResponse.json({ message: 'Bu saat zaten dolu. Lütfen başka bir saat seçin.' }, { status: 409 });
+    if (Array.isArray(appointments)) {
+      const isDuplicate = appointments.some((apt: { appointmentDateTime: string | number | Date }) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
+      if (isDuplicate) {
+        return NextResponse.json({ message: 'Bu saat zaten dolu. Lütfen başka bir saat seçin.' }, { status: 409 });
+      }
     }
 
     const newAppointment = {
