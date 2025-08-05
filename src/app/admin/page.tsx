@@ -349,7 +349,7 @@ const AdminPage = () => {
       </Modal>
 
        {/* Printable Form Container - Hidden */}
-      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+      <div style={{ position: 'absolute', top: 0, left: 0, zIndex: -1, opacity: 0, pointerEvents: 'none', width: '100%', height: 'auto' }}>
         {printingApplication && (
             <div ref={printableFormRef}>
                 <PrintableApplicationForm application={printingApplication} formRef={printableFormRef} />
