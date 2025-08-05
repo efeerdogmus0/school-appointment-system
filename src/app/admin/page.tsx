@@ -7,7 +7,7 @@ import { Table, Button, Spinner, Alert, Form, Container, Row, Col } from 'react-
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
 
 interface Appointment {
-  id: number;
+  id: string;
   appointmentDateTime: string;
   studentName: string;
   studentTC: string;
@@ -52,20 +52,30 @@ const AdminPage = () => {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (!confirm('Bu randevuyu kalıcı olarak silmek istediğinizden emin misiniz?')) return;
 
     try {
       const res = await fetch(`/api/appointments?id=${id}`, { method: 'DELETE' });
+
+      // Önce yanıtın başarılı olup olmadığını kontrol et
+      if (!res.ok) {
+        // Hata durumunda, sunucudan gelen mesajı ayrıştırmaya çalış
+        const errorData = await res.json().catch(() => ({ message: 'Randevu silinirken bir sunucu hatası oluştu.' }));
+        throw new Error(errorData.message);
+      }
+
+      // Başarılıysa, mesajı al ve durumu güncelle
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'Randevu silinemedi.');
-      setMessage('Randevu başarıyla silindi.');
-      fetchAppointments(); // Listeyi yenile
+      setMessage(data.message || 'Randevu başarıyla iptal edildi.');
+      // Listeyi yenilemek için randevuları yeniden çek
+      fetchAppointments();
+
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('Randevu silinirken bilinmeyen bir hata oluştu.');
+        setError('Bilinmeyen bir hata oluştu.');
       }
     }
   };
