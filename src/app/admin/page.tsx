@@ -109,19 +109,41 @@ const AdminPage = () => {
 
   useEffect(() => {
     if (printingApplication && printableFormRef.current) {
-      html2canvas(printableFormRef.current, { scale: 2, useCORS: true })
+      const element = printableFormRef.current;
+
+      const onClone = (document: Document) => {
+        const images = document.querySelectorAll('img');
+        const promises = Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise<void>(resolve => {
+            img.onload = () => resolve();
+            img.onerror = () => resolve(); // Resolve even on error to not block PDF generation
+          });
+        });
+        return Promise.all(promises);
+      };
+
+      html2canvas(element, { 
+        scale: 2, 
+        useCORS: true,
+        onclone: onClone,
+      })
         .then(canvas => {
+          if (canvas.width === 0 || canvas.height === 0) {
+            throw new Error('Canvas is empty. The component might not be rendering correctly.');
+          }
           const imgData = canvas.toDataURL('image/png');
           const pdf = new jsPDF('p', 'mm', 'a4');
           const pdfWidth = pdf.internal.pageSize.getWidth();
           const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
           pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
           pdf.save(`${printingApplication.studentName}_basvuru.pdf`);
-          setPrintingApplication(null); // Clean up after generation
         })
         .catch(err => {
-          setError('PDF oluşturulurken bir hata oluştu: ' + err.message);
-          setPrintingApplication(null);
+          setError(`PDF oluşturulurken bir hata oluştu: ${err.message}`);
+        })
+        .finally(() => {
+          setPrintingApplication(null); // Clean up in any case
         });
     }
   }, [printingApplication]);
