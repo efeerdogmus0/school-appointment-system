@@ -72,7 +72,7 @@ const AdminPage = () => {
     if (!editingApplication || !editingApplication.id) return;
 
     try {
-      const res = await fetch(`/api/applications/${editingApplication.id}`, {
+      const res = await fetch(`/api/applications/update?id=${editingApplication.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingApplication),
@@ -94,7 +94,7 @@ const AdminPage = () => {
   const handleDelete = async (id: string) => {
     if (confirm('Bu başvuruyu silmek istediğinizden emin misiniz?')) {
       try {
-        const res = await fetch(`/api/applications/${id}`, { method: 'DELETE' });
+        const res = await fetch(`/api/applications/delete?id=${id}`, { method: 'DELETE' });
         if (!res.ok) throw new Error('Başvuru silinemedi.');
         setApplications(applications.filter(app => app.id !== id));
       } catch (err) {
