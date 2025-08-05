@@ -38,10 +38,10 @@ export async function DELETE(
  */
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  context: { params: { id: string } }
 ) {
   try {
-    const id = params.id; // Get ID from the dynamic route segment
+    const id = context.params.id; // Get ID from context
     const body: ApplicationData = await request.json();
 
     if (!id) {
