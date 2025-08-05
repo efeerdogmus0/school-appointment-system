@@ -212,13 +212,15 @@ const PreRegistrationPage = () => {
                     </Accordion.Body>
                   </Accordion.Item>
 
-                   {/* Diğer Görüş ve Öneriler */}
+                   {/* Görüş ve Öneriler */}
                   <Accordion.Item eventKey="4">
-                    <Accordion.Header>Diğer Görüş ve Öneriler</Accordion.Header>
+                    <Accordion.Header>Görüş ve Öneriler</Accordion.Header>
                     <Accordion.Body>
+                        <Form.Group className="mb-3"><Form.Label>Okulumuz Hakkındaki Görüşleriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionSchool" onChange={handleInputChange} /></Form.Group>
+                        <Form.Group className="mb-3"><Form.Label>Okulumuz&apos;dan Beklentileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionExpectations" onChange={handleInputChange} /></Form.Group>
+                        <Form.Group className="mb-3"><Form.Label>Okulumuz ve eğitim sistemimiz için önerileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionSuggestions" onChange={handleInputChange} /></Form.Group>
                         <Form.Group className="mb-3"><Form.Label>Mesleğinizle ilgili konularda okula destek olmak ister misiniz?</Form.Label><Form.Select name="supportSchool" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Okul Aile Birliği'nde görev almak ister misiniz?</Form.Label><Form.Select name="joinPta" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Başka görüş ve önerileriniz</Form.Label><Form.Control as="textarea" rows={3} name="otherSuggestions" onChange={handleInputChange} /></Form.Group>
+                        <Form.Group className="mb-3"><Form.Label>Okul Aile Birliği&apos;nde görev almak ister misiniz?</Form.Label><Form.Select name="joinPta" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group>
                     </Accordion.Body>
                   </Accordion.Item>
                 </Accordion>

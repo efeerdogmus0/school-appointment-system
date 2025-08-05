@@ -7,8 +7,8 @@ const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
 
 // A comprehensive interface for the application data
 interface ApplicationData {
-  id: string; // The key from KV, e.g., 'application:1678886400000'
-  [key: string]: any; // All other fields from the form
+  id: string; 
+  [key: string]: string | number | null; // Define more specific types for form fields
 }
 
 const AdminPage = () => {
@@ -125,7 +125,7 @@ const AdminPage = () => {
   };
 
   // Helper to render a field if it exists
-  const renderField = (key: string, value: any) => {
+    const renderField = (key: string, value: string | number | null) => {
     if (!value || key === 'id') return null; // Don't render the ID field here
     const label = fieldLabels[key] || key; // Use mapped label or fallback to key
     return (
