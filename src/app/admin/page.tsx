@@ -7,8 +7,70 @@ const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
 
 // A comprehensive interface for the application data
 interface ApplicationData {
-  id: string; 
-  [key: string]: string | number | null; // Define more specific types for form fields
+  id: string;
+  appointmentDate?: string;
+  appointmentTime?: string;
+  studentTC?: string;
+  studentName?: string;
+  studentDob?: string;
+  studentPhone?: string;
+  studentPob?: string;
+  studentPrevSchool?: string;
+  studentBloodType?: string;
+  studentDisability?: string;
+  studentChronicIllness?: string;
+  parentsTogether?: string;
+  parentsBiological?: string;
+  guardianName?: string;
+  guardianEducation?: string;
+  guardianOccupation?: string;
+  guardianPhoneCell?: string;
+  guardianPhoneHome?: string;
+  guardianPhoneWork?: string;
+  guardianEmail?: string;
+  guardianBloodType?: string;
+  guardianAddressHome?: string;
+  guardianAddressWork?: string;
+  guardianChronicIllness?: string;
+  guardianDisability?: string;
+  guardianIncome?: string;
+  fatherName?: string;
+  fatherAlive?: string;
+  fatherEducation?: string;
+  fatherOccupation?: string;
+  fatherPhoneCell?: string;
+  fatherPhoneHome?: string;
+  fatherPhoneWork?: string;
+  fatherEmail?: string;
+  fatherBloodType?: string;
+  fatherAddressHome?: string;
+  fatherAddressWork?: string;
+  fatherChronicIllness?: string;
+  fatherDisability?: string;
+  fatherIncome?: string;
+  lgsScore?: string;
+  lgsPercentileTurkey?: string;
+  lgsPercentileCity?: string;
+  scholarshipWon?: string;
+  tubitakInterest?: string;
+  turkishCorrect?: string;
+  turkishWrong?: string;
+  mathCorrect?: string;
+  mathWrong?: string;
+  scienceCorrect?: string;
+  scienceWrong?: string;
+  englishCorrect?: string;
+  englishWrong?: string;
+  religionCorrect?: string;
+  religionWrong?: string;
+  historyCorrect?: string;
+  historyWrong?: string;
+  opinionSchool?: string;
+  opinionExpectations?: string;
+  opinionSuggestions?: string;
+  supportSchool?: string;
+  joinPta?: string;
+  [key: string]: any; // Allow for other keys if necessary
 }
 
 const AdminPage = () => {
@@ -100,7 +162,10 @@ const AdminPage = () => {
     studentPhone: 'Öğrenci Cep Telefonu',
     studentPrevSchool: 'Mezun Olduğu Okul',
     studentBloodType: 'Öğrenci Kan Grubu',
-    studentDisability: 'Engel Durumu',
+    studentDisability: 'Öğrenci Engel Durumu',
+    studentChronicIllness: 'Öğrenci Kronik Hastalığı',
+    parentsTogether: 'Anne-Baba Birlikte Mi?',
+    parentsBiological: 'Anne-Baba Öz Mü?',
     guardianName: 'Veli Adı Soyadı',
     guardianEducation: 'Veli Öğrenim Durumu',
     guardianOccupation: 'Veli Mesleği',
@@ -109,66 +174,116 @@ const AdminPage = () => {
     guardianPhoneWork: 'Veli İş Telefonu',
     guardianEmail: 'Veli E-Posta',
     guardianBloodType: 'Veli Kan Grubu',
-    guardianAddressHome: 'Ev Adresi',
-    guardianAddressWork: 'İş Adresi',
+    guardianAddressHome: 'Veli Ev Adresi',
+    guardianAddressWork: 'Veli İş Adresi',
+    guardianChronicIllness: 'Veli Kronik Hastalığı',
+    guardianDisability: 'Veli Engel Durumu',
+    guardianIncome: 'Veli Aylık Geliri',
     fatherName: 'Baba Adı Soyadı',
+    fatherAlive: 'Baba Sağ Mı?',
+    fatherEducation: 'Baba Öğrenim Durumu',
     fatherOccupation: 'Baba Mesleği',
-    fatherPhone: 'Baba Telefonu',
+    fatherPhoneCell: 'Baba Cep Telefonu',
+    fatherPhoneHome: 'Baba Ev Telefonu',
+    fatherPhoneWork: 'Baba İş Telefonu',
     fatherEmail: 'Baba E-Posta',
+    fatherBloodType: 'Baba Kan Grubu',
+    fatherAddressHome: 'Baba Ev Adresi',
+    fatherAddressWork: 'Baba İş Adresi',
+    fatherChronicIllness: 'Baba Kronik Hastalığı',
+    fatherDisability: 'Baba Engel Durumu',
+    fatherIncome: 'Baba Aylık Geliri',
     lgsScore: 'LGS Puanı',
-    lgsPercentileTurkey: 'Türkiye Yüzdelik Dilimi',
-    lgsPercentileCity: 'İl Yüzdelik Dilimi',
+    lgsPercentileTurkey: 'Türkiye Geneli Yüzdelik Dilimi',
+    lgsPercentileCity: 'İl Geneli Yüzdelik Dilimi',
     scholarshipWon: 'Bursluluk Kazandı Mı?',
     tubitakInterest: 'TÜBİTAK Başvuru Alanı',
-    opinionSchool: 'Okulumuz Hakkındaki Görüşler',
-    opinionExpectations: 'Okulumuzdan Beklentiler',
-    opinionSuggestions: 'Okulumuz İçin Öneriler',
+    turkishCorrect: 'Türkçe Doğru',
+    turkishWrong: 'Türkçe Yanlış',
+    mathCorrect: 'Matematik Doğru',
+    mathWrong: 'Matematik Yanlış',
+    scienceCorrect: 'Fen Bilimleri Doğru',
+    scienceWrong: 'Fen Bilimleri Yanlış',
+    englishCorrect: 'Yabancı Dil Doğru',
+    englishWrong: 'Yabancı Dil Yanlış',
+    religionCorrect: 'Din Kültürü Doğru',
+    religionWrong: 'Din Kültürü Yanlış',
+    historyCorrect: 'T.C. İnkılap Tarihi Doğru',
+    historyWrong: 'T.C. İnkılap Tarihi Yanlış',
+    opinionSchool: 'Okul Hakkındaki Görüşler',
+    opinionExpectations: 'Okuldan Beklentiler',
+    opinionSuggestions: 'Okul İçin Öneriler',
+    supportSchool: 'Okula Destek Olma İsteği',
+    joinPta: 'Okul Aile Birliğine Katılma İsteği',
     id: 'Başvuru ID',
   };
 
-  // Helper to render a field if it exists
-    const renderField = (key: string, value: string | number | null) => {
-    if (!value || key === 'id') return null; // Don't render the ID field here
-    const label = fieldLabels[key] || key; // Use mapped label or fallback to key
+  const renderField = (app: ApplicationData, key: string) => {
+    const value = app[key];
+    if (value === null || value === undefined || value === '' || key === 'id') return null;
+    const label = fieldLabels[key] || key;
     return (
-      <Col md={6} lg={4} className="mb-2">
-        <strong>{label}:</strong> {value}
+      <Col md={6} lg={4} className="mb-2" key={key}>
+        <strong>{label}:</strong> {String(value)}
       </Col>
     );
   };
+
+  const renderGroup = (title: string, fields: string[], app: ApplicationData) => {
+    const renderedFields = fields.map(key => renderField(app, key)).filter(Boolean);
+    if (renderedFields.length === 0) return null;
+    return (
+      <Card className="mb-3">
+        <Card.Header as="h6">{title}</Card.Header>
+        <Card.Body><Row>{renderedFields}</Row></Card.Body>
+      </Card>
+    );
+  };
+
+  const studentFields = ['studentTC', 'studentName', 'studentDob', 'studentPob', 'studentPhone', 'studentPrevSchool', 'studentBloodType', 'studentDisability', 'studentChronicIllness', 'parentsTogether', 'parentsBiological'];
+  const guardianFields = ['guardianName', 'guardianEducation', 'guardianOccupation', 'guardianPhoneCell', 'guardianPhoneHome', 'guardianPhoneWork', 'guardianEmail', 'guardianBloodType', 'guardianAddressHome', 'guardianAddressWork', 'guardianChronicIllness', 'guardianDisability', 'guardianIncome'];
+  const fatherFields = ['fatherName', 'fatherAlive', 'fatherEducation', 'fatherOccupation', 'fatherPhoneCell', 'fatherPhoneHome', 'fatherPhoneWork', 'fatherEmail', 'fatherBloodType', 'fatherAddressHome', 'fatherAddressWork', 'fatherChronicIllness', 'fatherDisability', 'fatherIncome'];
+  const lgsFields = ['lgsScore', 'lgsPercentileTurkey', 'lgsPercentileCity', 'scholarshipWon', 'tubitakInterest'];
+  const examDetailsFields = ['turkishCorrect', 'turkishWrong', 'mathCorrect', 'mathWrong', 'scienceCorrect', 'scienceWrong', 'englishCorrect', 'englishWrong', 'religionCorrect', 'religionWrong', 'historyCorrect', 'historyWrong'];
+  const opinionFields = ['opinionSchool', 'opinionExpectations', 'opinionSuggestions', 'supportSchool', 'joinPta'];
 
   return (
     <Container className="my-5">
       <h1 className="text-center mb-4">Admin Paneli - Ön Kayıt Başvuruları</h1>
       {error && <Alert variant="danger">{error}</Alert>}
-      <Button onClick={fetchApplications} className="mb-3">Listeyi Yenile</Button>
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <Button onClick={fetchApplications}>Listeyi Yenile</Button>
+        <span className="text-muted">Toplam Başvuru: {applications.length}</span>
+      </div>
       
       {applications.length > 0 ? (
-        <Accordion>
+        <Accordion alwaysOpen>
           {applications.map((app, index) => (
             <Accordion.Item eventKey={String(index)} key={app.id || index}>
               <Accordion.Header>
-                {app.studentName || 'İsimsiz Başvuru'} - (T.C: {app.studentTC || 'Belirtilmemiş'})
+                <div className="w-100 d-flex justify-content-between align-items-center pe-2">
+                  <span><strong>{app.studentName || 'İsimsiz Başvuru'}</strong> (T.C: {app.studentTC || 'N/A'})</span>
+                  <span className="badge bg-primary rounded-pill">{app.appointmentDate} - {app.appointmentTime}</span>
+                </div>
               </Accordion.Header>
               <Accordion.Body>
-                <Card>
-                    <Card.Body>
-                        <Row>
-                            {Object.entries(app).map(([key, value]) => renderField(key, value))}
-                        </Row>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Button variant="danger" size="sm" onClick={() => handleDelete(app.id)}>
-                            Başvuruyu Sil
-                        </Button>
-                    </Card.Footer>
-                </Card>
+                {renderGroup('Öğrenci Bilgileri', studentFields, app)}
+                {renderGroup('Veli Bilgileri', guardianFields, app)}
+                {renderGroup('Baba Bilgileri', fatherFields, app)}
+                {renderGroup('LGS ve Başvuru Bilgileri', lgsFields, app)}
+                {renderGroup('Derslere Göre D/Y Sayıları', examDetailsFields, app)}
+                {renderGroup('Görüş ve Öneriler', opinionFields, app)}
+                <div className="text-end mt-3">
+                    <Button variant="danger" size="sm" onClick={() => handleDelete(app.id)}>
+                        Başvuruyu Sil
+                    </Button>
+                </div>
               </Accordion.Body>
             </Accordion.Item>
           ))}
         </Accordion>
       ) : (
-        <Alert variant="info">Kayıtlı başvuru bulunmamaktadır.</Alert>
+        <Alert variant="info" className="text-center">Kayıtlı başvuru bulunmamaktadır.</Alert>
       )}
     </Container>
   );
