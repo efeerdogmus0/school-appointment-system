@@ -1,10 +1,49 @@
 import React, { forwardRef } from 'react';
+import Image from 'next/image';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
+// Define a specific type for the form data to avoid 'any'
+interface ApplicationData {
+  appointment?: { startTime: string };
+  studentTC?: string;
+  studentName?: string;
+  studentDob?: string;
+  studentPob?: string;
+  studentPhone?: string;
+  studentPrevSchool?: string;
+  primaryGuardianType?: string;
+  primaryGuardianName?: string;
+  primaryGuardianTC?: string;
+  primaryGuardianPhone?: string;
+  primaryGuardianEmail?: string;
+  primaryGuardianJob?: string;
+  primaryGuardianWorkAddress?: string;
+  secondaryGuardianType?: string;
+  secondaryGuardianName?: string;
+  secondaryGuardianTC?: string;
+  secondaryGuardianPhone?: string;
+  secondaryGuardianEmail?: string;
+  secondaryGuardianJob?: string;
+  secondaryGuardianWorkAddress?: string;
+  lgsScore?: string;
+  lgsRankTurkey?: string;
+  lgsRankProvince?: string;
+  examNetTurkishD?: string; examNetTurkishY?: string;
+  examNetMathD?: string; examNetMathY?: string;
+  examNetScienceD?: string; examNetScienceY?: string;
+  examNetSocialD?: string; examNetSocialY?: string;
+  examNetReligionD?: string; examNetReligionY?: string;
+  examNetForeignLangD?: string; examNetForeignLangY?: string;
+  scholarshipScore?: string;
+  tubitakInterest?: string;
+  discoveryChannel?: string;
+  additionalNotes?: string;
+}
+
 interface PrintableApplicationFormProps {
-  formData: any;
+  formData: ApplicationData;
 }
 
 const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplicationFormProps>(({ formData }, ref) => {
@@ -16,7 +55,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
     if (!dateString) return 'Belirtilmemiş';
     try {
       return format(new Date(dateString), 'dd MMMM yyyy, EEEE HH:mm', { locale: tr });
-    } catch (error) {
+    } catch {
       return 'Geçersiz Tarih';
     }
   };
@@ -25,7 +64,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
     if (!dateString) return 'Belirtilmemiş';
     try {
       return format(new Date(dateString), 'dd/MM/yyyy', { locale: tr });
-    } catch (error) {
+    } catch {
       return 'Geçersiz Tarih';
     }
   };
@@ -101,7 +140,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
 
       <Container>
         <header className="text-center mb-4">
-          <img src="/logo-nnl.png" alt="Okul Logosu" style={{ maxWidth: '120px', marginBottom: '10px' }} />
+          <Image src="/logo-nnl.png" alt="Okul Logosu" width={120} height={120} style={{ marginBottom: '10px' }} />
           <h2>NİŞANTAŞI NURİ AKIN ANADOLU LİSESİ</h2>
           <h3>ÖN KAYIT BAŞVURU FORMU</h3>
         </header>
@@ -119,7 +158,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
             <Row>
               <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.studentTC}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Adı Soyadı:</span> <span className="info-value">{formData.studentName}</span></p></Col>
-              <Col xs={6}><p><span className="info-label">Doğum Tarihi:</span> <span className="info-value">{formatSimpleDate(formData.studentDob)}</span></p></Col>
+              <Col xs={6}><p><span className="info-label">Doğum Tarihi:</span> <span className="info-value">{formatSimpleDate(formData.studentDob!)}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Doğum Yeri:</span> <span className="info-value">{formData.studentPob}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.studentPhone}</span></p></Col>
               <Col xs={6}><p><span className="info-label">Mezun Olduğu Okul:</span> <span className="info-value">{formData.studentPrevSchool}</span></p></Col>
