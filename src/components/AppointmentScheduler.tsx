@@ -50,15 +50,12 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
     const fetchBookedSlots = async () => {
       setIsLoading(true);
       try {
-        // TODO: Gerçek API endpoint'i oluşturulacak
-        // const response = await fetch(`/api/slots?date=${formatDate(selectedDate)}`);
-        // const data = await response.json();
-        // setBookedSlots(data.booked || []);
-
-        // Geçici Mock Data
-        await new Promise(resolve => setTimeout(resolve, 300));
-        const mockData = formatDate(selectedDate) === '2025-08-18' ? ['10:05', '14:30'] : [];
-        setBookedSlots(mockData);
+        const response = await fetch(`/api/slots?date=${formatDate(selectedDate)}`);
+        if (!response.ok) {
+          throw new Error('API isteği başarısız oldu');
+        }
+        const data = await response.json();
+        setBookedSlots(data.booked || []);
 
       } catch (error) {
         console.error('Dolu randevular alınamadı:', error);
