@@ -1,9 +1,17 @@
 'use client';
 
+'use client';
+
 import { useState, useCallback } from 'react';
 import { Container, Row, Col, Form, Button, Accordion, Alert, Card } from 'react-bootstrap';
 import AppointmentScheduler from '@/components/AppointmentScheduler';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import DatePicker, { registerLocale } from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { tr } from 'date-fns/locale/tr';
+
+// Register Turkish locale for datepicker
+registerLocale('tr', tr);
 
 // Helper component for required fields
 // Define the shape of our form data
@@ -25,6 +33,7 @@ const RequiredLabel = ({ children }: { children: React.ReactNode }) => (
 
 const PreRegistrationPage = () => {
   const [formData, setFormData] = useState<FormData>({});
+  const [studentDob, setStudentDob] = useState<Date | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<AppointmentSlot | null>(null);
   const [errors, setErrors] = useState<Partial<FormData & { appointment: string }>>({});
   const [showAlert, setShowAlert] = useState(false);
@@ -39,6 +48,19 @@ const PreRegistrationPage = () => {
       setErrors((prevErrors: Partial<FormData & { appointment: string }>) => {
         const newErrors = { ...prevErrors };
         delete newErrors[name];
+        return newErrors;
+      });
+    }
+  };
+
+  const handleDateChange = (date: Date | null) => {
+    setStudentDob(date);
+    const dateString = date ? date.toISOString().split('T')[0] : ''; // Format: YYYY-MM-DD
+    setFormData((prev) => ({ ...prev, studentDob: dateString }));
+    if (errors.studentDob) {
+      setErrors((prev) => {
+        const newErrors = { ...prev };
+        delete newErrors.studentDob;
         return newErrors;
       });
     }
@@ -232,7 +254,28 @@ const PreRegistrationPage = () => {
                       <Row>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>T.C. Numarası</RequiredLabel><Form.Control id="studentTC" type="text" name="studentTC" onChange={handleInputChange} isInvalid={!!errors.studentTC} /><Form.Control.Feedback type="invalid">{errors.studentTC}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Adı Soyadı</RequiredLabel><Form.Control id="studentName" type="text" name="studentName" onChange={handleInputChange} isInvalid={!!errors.studentName} /><Form.Control.Feedback type="invalid">{errors.studentName}</Form.Control.Feedback></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Doğum Tarihi (GG/AA/YYYY)</RequiredLabel><Form.Control id="studentDob" type="date" name="studentDob" onChange={handleInputChange} isInvalid={!!errors.studentDob} /><Form.Control.Feedback type="invalid">{errors.studentDob}</Form.Control.Feedback></Form.Group></Col>
+                                                <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <RequiredLabel>Doğum Tarihi</RequiredLabel>
+                            <DatePicker
+                              id="studentDob"
+                              selected={studentDob}
+                              onChange={handleDateChange}
+                              locale="tr"
+                              dateFormat="dd/MM/yyyy"
+                              className={`form-control ${errors.studentDob ? 'is-invalid' : ''}`}
+                              placeholderText="GG/AA/YYYY"
+                              showYearDropdown
+                              scrollableYearDropdown
+                              yearDropdownItemNumber={80}
+                              maxDate={new Date()}
+                              autoComplete="off"
+                            />
+                            <Form.Control.Feedback type="invalid" className="d-block">
+                              {errors.studentDob}
+                            </Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Doğum Yeri (İl-İlçe)</RequiredLabel><Form.Control id="studentPob" type="text" name="studentPob" onChange={handleInputChange} isInvalid={!!errors.studentPob} /><Form.Control.Feedback type="invalid">{errors.studentPob}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Cep Telefonu</RequiredLabel><Form.Control id="studentPhone" type="tel" name="studentPhone" onChange={handleInputChange} isInvalid={!!errors.studentPhone} /><Form.Control.Feedback type="invalid">{errors.studentPhone}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Mezun Olduğu Okul</RequiredLabel><Form.Control id="studentPrevSchool" type="text" name="studentPrevSchool" onChange={handleInputChange} isInvalid={!!errors.studentPrevSchool} /><Form.Control.Feedback type="invalid">{errors.studentPrevSchool}</Form.Control.Feedback></Form.Group></Col>
