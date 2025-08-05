@@ -3,44 +3,7 @@ import Image from 'next/image';
 import { Container, Row, Col, Card } from 'react-bootstrap';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
-
-// Define a specific type for the form data to avoid 'any'
-interface ApplicationData {
-  appointment?: { startTime: string };
-  studentTC?: string;
-  studentName?: string;
-  studentDob?: string;
-  studentPob?: string;
-  studentPhone?: string;
-  studentPrevSchool?: string;
-  primaryGuardianType?: string;
-  primaryGuardianName?: string;
-  primaryGuardianTC?: string;
-  primaryGuardianPhone?: string;
-  primaryGuardianEmail?: string;
-  primaryGuardianJob?: string;
-  primaryGuardianWorkAddress?: string;
-  secondaryGuardianType?: string;
-  secondaryGuardianName?: string;
-  secondaryGuardianTC?: string;
-  secondaryGuardianPhone?: string;
-  secondaryGuardianEmail?: string;
-  secondaryGuardianJob?: string;
-  secondaryGuardianWorkAddress?: string;
-  lgsScore?: string;
-  lgsRankTurkey?: string;
-  lgsRankProvince?: string;
-  examNetTurkishD?: string; examNetTurkishY?: string;
-  examNetMathD?: string; examNetMathY?: string;
-  examNetScienceD?: string; examNetScienceY?: string;
-  examNetSocialD?: string; examNetSocialY?: string;
-  examNetReligionD?: string; examNetReligionY?: string;
-  examNetForeignLangD?: string; examNetForeignLangY?: string;
-  scholarshipScore?: string;
-  tubitakInterest?: string;
-  discoveryChannel?: string;
-  additionalNotes?: string;
-}
+import { ApplicationData } from '@/types'; // Use the centralized type definition with path alias
 
 interface PrintableApplicationFormProps {
   formData: ApplicationData;

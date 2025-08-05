@@ -343,7 +343,7 @@ const AdminPage = () => {
       {printingApplication && (
         <PrintableApplicationForm 
           ref={printableFormRef} 
-          application={printingApplication} 
+          formData={printingApplication} 
         />
       )}
 
