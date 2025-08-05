@@ -8,7 +8,7 @@ interface PrintableFormProps {
 }
 
 // Helper to display data or a placeholder
-const DataField = ({ label, value }: { label: string; value: any }) => (
+const DataField = ({ label, value }: { label: string; value: string | number | boolean | null | undefined }) => (
   <div className="d-flex justify-content-between border-bottom py-1">
     <span className="fw-bold">{label}:</span>
     <span>{value || 'N/A'}</span>

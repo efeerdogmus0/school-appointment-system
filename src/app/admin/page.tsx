@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { Container, Button, Alert, Form, Modal, Accordion, Row, Col, Card, Table } from 'react-bootstrap';
+import { useState, useRef } from 'react';
+import { Container, Button, Alert, Form, Modal, Accordion, Row, Col, Card } from 'react-bootstrap';
 import { ApplicationData } from '@/types/application';
 import PrintableApplicationForm from '@/components/PrintableApplicationForm';
 import jsPDF from 'jspdf';

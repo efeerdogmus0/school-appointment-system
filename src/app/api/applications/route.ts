@@ -62,15 +62,17 @@ export async function POST(request: NextRequest) {
 
     // 1. Destructure all expected data from the body
     const {
-      appointmentDate, appointmentTime, studentTC, studentName, studentDob, studentPhone, guardianName, guardianPhoneCell, guardianEmail,
-      // The rest of the fields are collected but not used for this specific validation
-      lgsScore, lgsPercentileTurkey, // These are used for logging
-      _studentPob, _studentPrevSchool, _studentBloodType, _studentDisability, _studentChronicIllness, _parentsTogether, _parentsBiological,
-      _guardianEducation, _guardianOccupation, _guardianPhoneHome, _guardianPhoneWork, _guardianBloodType, _guardianAddressHome, _guardianAddressWork, _guardianChronicIllness, _guardianDisability, _guardianIncome,
-      _fatherName, _fatherAlive, _fatherEducation, _fatherOccupation, _fatherPhoneCell, _fatherPhoneHome, _fatherPhoneWork, _fatherEmail, _fatherBloodType, _fatherAddressHome, _fatherAddressWork, _fatherChronicIllness, _fatherDisability, _fatherIncome,
-      _lgsPercentileCity, _scholarshipWon, _tubitakInterest,
-      _turkishCorrect, _turkishWrong, _mathCorrect, _mathWrong, _scienceCorrect, _scienceWrong, _englishCorrect, _englishWrong, _religionCorrect, _religionWrong, _historyCorrect, _historyWrong,
-      _opinionSchool, _opinionExpectations, _opinionSuggestions, _supportSchool, _joinPta
+      appointmentDate,
+      appointmentTime,
+      studentTC,
+      studentName,
+      studentDob,
+      studentPhone,
+      guardianName,
+      guardianPhoneCell,
+      guardianEmail,
+      lgsScore,
+      lgsPercentileTurkey
     } = body;
 
     // 2. Server-side validation for required fields
