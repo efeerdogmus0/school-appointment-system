@@ -185,13 +185,13 @@ const PreRegistrationPage = () => {
         <Row className="justify-content-center">
           <Col md={10} lg={8}>
             <Card className="p-4 shadow-sm">
-              <h1 className="text-center mb-4">Nuri Akın Anadolu Lisesi Ön Kayıt Formu</h1>
+              <h1 className="text-center mb-4">Nuri Akın Anadolu Lisesi Kayıt Randevu Formu</h1>
               {showAlert && <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>{alertMessage}</Alert>}
 
               <Alert variant="info">
                 <Alert.Heading as="h6">Randevu Tarihleri Hakkında Bilgilendirme</Alert.Heading>
                 <p className="mb-1">
-                  Ön kayıt randevuları <strong>18-22 Ağustos</strong> ve <strong>25-26 Ağustos</strong> tarihleri arasında alınabilmektedir.
+                  Kayıt randevuları <strong>18-22 Ağustos</strong> ve <strong>25-26 Ağustos</strong> tarihleri arasında alınabilmektedir.
                 </p>
                 <hr/>
                 <p className="mb-0">
@@ -303,9 +303,9 @@ const PreRegistrationPage = () => {
                     <Accordion.Header>Görüş ve Öneriler</Accordion.Header>
                     <Accordion.Body>
                         <Form.Group className="mb-3"><Form.Label>Okulumuz Hakkındaki Görüşleriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionSchool" onChange={handleInputChange} /></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Okulumuz'dan Beklentileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionExpectations" onChange={handleInputChange} /></Form.Group>
+                        <Form.Group className="mb-3"><Form.Label>Okulumuz&apos;dan Beklentileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionExpectations" onChange={handleInputChange} /></Form.Group>
                         <Form.Group className="mb-3"><RequiredLabel>Mesleğinizle ilgili konularda okula destek olmak ister misiniz?</RequiredLabel><Form.Select id="supportSchool" name="supportSchool" onChange={handleInputChange} isInvalid={!!errors.supportSchool}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.supportSchool}</Form.Control.Feedback></Form.Group>
-                        <Form.Group className="mb-3"><RequiredLabel>Okul Aile Birliği'nde görev almak ister misiniz?</RequiredLabel><Form.Select id="joinPta" name="joinPta" onChange={handleInputChange} isInvalid={!!errors.joinPta}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.joinPta}</Form.Control.Feedback></Form.Group>
+                        <Form.Group className="mb-3"><RequiredLabel>Okul Aile Birliği&apos;nde görev almak ister misiniz?</RequiredLabel><Form.Select id="joinPta" name="joinPta" onChange={handleInputChange} isInvalid={!!errors.joinPta}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.joinPta}</Form.Control.Feedback></Form.Group>
                     </Accordion.Body>
                   </Accordion.Item>
                 </Accordion>

@@ -257,11 +257,11 @@ const AdminPage = () => {
   const fatherFields: (keyof ApplicationData)[] = ['fatherName', 'fatherAlive', 'fatherEducation', 'fatherOccupation', 'fatherPhoneCell', 'fatherPhoneHome', 'fatherPhoneWork', 'fatherEmail', 'fatherBloodType', 'fatherAddressHome', 'fatherAddressWork', 'fatherChronicIllness', 'fatherDisability', 'fatherIncome'];
   const lgsFields: (keyof ApplicationData)[] = ['lgsScore', 'lgsPercentileTurkey', 'lgsPercentileCity', 'scholarshipWon', 'tubitakInterest'];
   const examDetailsFields: (keyof ApplicationData)[] = ['turkishCorrect', 'turkishWrong', 'mathCorrect', 'mathWrong', 'scienceCorrect', 'scienceWrong', 'englishCorrect', 'englishWrong', 'religionCorrect', 'religionWrong', 'historyCorrect', 'historyWrong'];
-  const opinionFields: (keyof ApplicationData)[] = ['opinionSchool', 'opinionExpectations', 'opinionSuggestions', 'supportSchool', 'joinPta'];
+  const opinionFields: (keyof ApplicationData)[] = ['opinionSchool', 'opinionExpectations', 'supportSchool', 'joinPta'];
 
   return (
     <Container className="my-5">
-      <h1 className="text-center mb-4">Admin Paneli - Ön Kayıt Başvuruları</h1>
+      <h1 className="text-center mb-4">Admin Paneli - Kayıt Randevusu Başvuruları</h1>
       {error && <Alert variant="danger">{error}</Alert>}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <Button onClick={fetchApplications}>Listeyi Yenile</Button>
