@@ -60,44 +60,40 @@ const AppointmentScheduler = ({ onSlotSelect, isInvalid }: AppointmentSchedulerP
   return (
     <div className={`p-3 border rounded ${isInvalid ? 'border-danger' : ''}`}>
       <h5 className="mb-3">Randevu Tarihi ve Saati Seçin <span className="text-danger">(Zorunlu)</span></h5>
-      <Row>
-        <Col md={6} className="d-flex justify-content-center mb-3 mb-md-0">
+      <Row className="justify-content-center">
+        <Col xs={12} md={8} lg={6} className="d-flex justify-content-center">
           <Calendar
             onChange={handleDateChange}
             value={selectedDate}
             tileDisabled={tileDisabled}
             minDate={new Date()} // Geçmiş tarihleri devre dışı bırak
             locale="tr-TR"
+            className="border-0 shadow-sm"
           />
         </Col>
-        <Col md={6}>
-          {selectedDate ? (
-            <div>
-              <h6 className="text-center">Müsait Saatler ({selectedDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })})</h6>
-              <div className="d-flex flex-wrap justify-content-center gap-2 mt-3">
-                {timeSlotsForSelectedDate.length > 0 ? (
-                  timeSlotsForSelectedDate.map(time => (
-                    <Button
-                      key={time}
-                      variant={selectedTime === time ? 'success' : 'outline-success'}
-                      onClick={() => handleTimeSelect(time)}
-                      className="flex-grow-1"
-                    >
-                      {time}
-                    </Button>
-                  ))
-                ) : (
-                  <Alert variant="warning" className="w-100 text-center">Bu tarih için uygun saat bulunmuyor.</Alert>
-                )}
-              </div>
-            </div>
-          ) : (
-            <div className="d-flex align-items-center justify-content-center h-100">
-              <Alert variant="info">Lütfen takvimden bir tarih seçiniz.</Alert>
-            </div>
-          )}
-        </Col>
       </Row>
+
+      {selectedDate && (
+        <div className="mt-4">
+          <h6 className="text-center mb-3">Müsait Saatler ({selectedDate.toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })})</h6>
+          <div className="d-flex flex-wrap justify-content-center gap-2" style={{ maxWidth: '400px', margin: '0 auto' }}>
+            {timeSlotsForSelectedDate.length > 0 ? (
+              timeSlotsForSelectedDate.map(time => (
+                <Button
+                  key={time}
+                  variant={selectedTime === time ? 'primary' : 'outline-primary'}
+                  onClick={() => handleTimeSelect(time)}
+                  style={{ minWidth: '80px' }}
+                >
+                  {time}
+                </Button>
+              ))
+            ) : (
+              <Alert variant="warning" className="w-100 text-center">Bu tarih için uygun saat bulunmuyor.</Alert>
+            )}
+          </div>
+        </div>
+      )}
       {isInvalid && <div className="text-danger mt-2">Lütfen bir randevu tarihi ve saati seçiniz.</div>}
     </div>
   );
