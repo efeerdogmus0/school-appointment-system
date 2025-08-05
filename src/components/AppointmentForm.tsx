@@ -8,70 +8,91 @@ interface AppointmentFormProps {
 }
 
 const initialFormData = {
-  ogrenciNo: '',
-  ogrenciTC: '',
-  ogrenciAdSoyad: '',
-  ogrenciDogumTarihi: '',
-  ogrenciDogumYeri: '',
-  ogrenciCepTel: '',
-  mezunOlduguOkul: '',
-  surekliHastalik: '',
-  engelDurumu: '',
-  ogrenciKanGrubu: '',
-  anneBabaBirlikteMi: '',
-  anneBabaOzMu: '',
-  veliTuru: '', // Anne, Baba, Diğer
-  veliAdSoyad: '',
-  veliOgrenimDurumu: '',
-  veliMeslek: '',
-  veliTelEv: '',
-  veliTelIs: '',
-  veliTelCep: '',
-  veliKanGrubu: '',
-  veliEposta: '',
-  veliEvAdres: '',
-  veliIsAdres: '',
-  veliSurekliHastalik: '',
-  veliEngelDurumu: '',
-  veliAylikGelir: '',
-  lgsPuani: '',
-  lgsGenelYuzdelik: '',
-  lgsIlYuzdelik: '',
-  burslulukKazandiMi: '',
-  tubitakOlimpiyatBasvurusu: '',
-  turkceDogru: '',
-  turkceYanlis: '',
-  matematikDogru: '',
-  matematikYanlis: '',
-  fenDogru: '',
-  fenYanlis: '',
-  yabanciDilDogru: '',
-  yabanciDilYanlis: '',
-  dinKulturuDogru: '',
-  dinKulturuYanlis: '',
-  inkilapDogru: '',
-  inkilapYanlis: '',
-  meslekiGorev: '',
-  okulAileBirligiGorev: '',
-  baskaGorusOneri: '',
+  studentName: '',
+  studentTC: '',
+  studentSchoolNumber: '',
+  studentClass: '', // Bu alan formda yok ama state'de kalabilir
+  parentRelation: 'Anne',
+  parentName: '',
+  parentOccupation: '',
+  parentPhone: '',
+  parentEmail: '',
+  parentAddress: '',
+  notes: '',
+  // Önceki formdan kalan ve şu an kullanılmayan diğer alanlar temizlendi.
 };
 
 const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
   const [formData, setFormData] = useState(initialFormData);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null); // For general/API errors
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof typeof initialFormData, string>>>({});
   const [success, setSuccess] = useState<string | null>(null);
+  const [activeKey, setActiveKey] = useState<string | string[] | undefined>('0');
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+  const validateField = (name: keyof typeof initialFormData, value: string) => {
+    switch (name) {
+      case 'studentName':
+      case 'parentName':
+        return value.trim().length < 2 ? 'Ad Soyad en az 2 karakter olmalıdır.' : '';
+      case 'studentTC':
+        return /^\d{11}$/.test(value) ? '' : 'T.C. Kimlik Numarası 11 rakamdan oluşmalıdır.';
+      case 'parentPhone':
+        return /^\d{10,11}$/.test(value.replace(/\s/g, '')) ? '' : 'Geçerli bir telefon numarası giriniz.';
+      case 'parentEmail':
+        return /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(value) ? '' : 'Geçerli bir e-posta adresi giriniz.';
+      default:
+        return '';
+    }
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target as { name: keyof typeof initialFormData; value: string };
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target as { name: keyof typeof initialFormData; value: string };
+    const error = validateField(name, value);
+    setFormErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
     setSuccess(null);
+
+    // Full form validation
+    const newErrors: Partial<Record<keyof typeof initialFormData, string>> = {};
+    let firstErrorKey: string | null = null;
+    let firstErrorAccordion: string | null = null;
+
+    (Object.keys(formData) as Array<keyof typeof initialFormData>).forEach(key => {
+      const error = validateField(key, formData[key]);
+      if (error) {
+        newErrors[key] = error;
+        if (!firstErrorKey) {
+          firstErrorKey = key;
+          if (['studentName', 'studentTC', 'studentSchoolNumber', 'studentClass'].includes(key)) {
+            firstErrorAccordion = '0';
+          } else if (['parentRelation', 'parentName', 'parentOccupation', 'parentPhone', 'parentEmail', 'parentAddress'].includes(key)) {
+            firstErrorAccordion = '1';
+          }
+        }
+      }
+    });
+
+    setFormErrors(newErrors);
+
+    if (Object.keys(newErrors).length > 0) {
+      if (firstErrorAccordion) {
+        setActiveKey(firstErrorAccordion);
+      }
+      setError('Lütfen formdaki hataları düzeltin.');
+      return;
+    }
+
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/appointments', {
@@ -112,25 +133,41 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
       <p className="text-center mb-4">Seçilen Randevu Tarihi: <strong>{selectedDateTime.toLocaleString('tr-TR', { dateStyle: 'full', timeStyle: 'short' })}</strong></p>
       <p className="text-center text-muted mb-4 fst-italic">Tüm alanların doldurulması zorunludur.</p>
 
-      <Accordion defaultActiveKey="0">
+      <Accordion activeKey={activeKey} onSelect={(k) => setActiveKey(k === null ? undefined : k)} className="mb-4">
         {/* ÖĞRENCİ BİLGİLERİ */}
         <Accordion.Item eventKey="0">
           <Accordion.Header>Öğrenci Bilgileri</Accordion.Header>
           <Accordion.Body>
             <Row>
-              <Col md={6}><Form.Group className="mb-3" controlId="ogrenciAdSoyad"><Form.Label>Adı Soyadı</Form.Label><Form.Control value={formData.ogrenciAdSoyad} onChange={handleChange} required /></Form.Group></Col>
-              <Col md={6}><Form.Group className="mb-3" controlId="ogrenciTC"><Form.Label>T.C. Kimlik Numarası</Form.Label><Form.Control value={formData.ogrenciTC} onChange={handleChange} required maxLength={11} /></Form.Group></Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="studentName">
+                  <Form.Label>Adı Soyadı</Form.Label>
+                  <Form.Control name="studentName" type="text" value={formData.studentName} onChange={handleChange} onBlur={handleBlur} isInvalid={!!formErrors.studentName} required />
+                  <Form.Control.Feedback type="invalid">{formErrors.studentName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="studentTC">
+                  <Form.Label>T.C. Kimlik Numarası</Form.Label>
+                  <Form.Control name="studentTC" type="text" value={formData.studentTC} onChange={handleChange} onBlur={handleBlur} isInvalid={!!formErrors.studentTC} required maxLength={11} />
+                  <Form.Control.Feedback type="invalid">{formErrors.studentTC}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
             </Row>
             <Row>
-                <Col md={4}><Form.Group className="mb-3" controlId="ogrenciDogumTarihi"><Form.Label>Doğum Tarihi</Form.Label><Form.Control type="date" value={formData.ogrenciDogumTarihi} onChange={handleChange} /></Form.Group></Col>
-                <Col md={4}><Form.Group className="mb-3" controlId="ogrenciDogumYeri"><Form.Label>Doğum Yeri (İlçe)</Form.Label><Form.Control value={formData.ogrenciDogumYeri} onChange={handleChange} /></Form.Group></Col>
-                <Col md={4}><Form.Group className="mb-3" controlId="ogrenciCepTel"><Form.Label>Cep Telefonu</Form.Label><Form.Control type="tel" value={formData.ogrenciCepTel} onChange={handleChange} /></Form.Group></Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="studentSchoolNumber">
+                  <Form.Label>Okul Numarası</Form.Label>
+                  <Form.Control name="studentSchoolNumber" type="text" value={formData.studentSchoolNumber} onChange={handleChange} />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                 <Form.Group className="mb-3" controlId="studentClass">
+                  <Form.Label>Sınıfı</Form.Label>
+                  <Form.Control name="studentClass" type="text" value={formData.studentClass} onChange={handleChange} />
+                </Form.Group>
+              </Col>
             </Row>
-             <Row>
-                <Col md={6}><Form.Group className="mb-3" controlId="mezunOlduguOkul"><Form.Label>Mezun Olduğu Okul</Form.Label><Form.Control value={formData.mezunOlduguOkul} onChange={handleChange} /></Form.Group></Col>
-                <Col md={6}><Form.Group className="mb-3" controlId="ogrenciKanGrubu"><Form.Label>Kan Grubu</Form.Label><Form.Control value={formData.ogrenciKanGrubu} onChange={handleChange} /></Form.Group></Col>
-            </Row>
-            <Form.Group className="mb-3" controlId="surekliHastalik"><Form.Label>Sürekli hastalığı var ise belirtiniz</Form.Label><Form.Control as="textarea" rows={2} value={formData.surekliHastalik} onChange={handleChange} /></Form.Group>
           </Accordion.Body>
         </Accordion.Item>
 
@@ -138,64 +175,61 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
         <Accordion.Item eventKey="1">
           <Accordion.Header>Veli Bilgileri (Anne, Baba veya Diğer)</Accordion.Header>
           <Accordion.Body>
-            <Form.Group className="mb-3" controlId="veliTuru">
-                <Form.Label>Veli</Form.Label>
-                <Form.Select value={formData.veliTuru} onChange={handleChange}>
-                    <option>Seçiniz...</option>
-                    <option value="Anne">Anne</option>
-                    <option value="Baba">Baba</option>
-                    <option value="Diğer">Diğer</option>
-                </Form.Select>
+            <Form.Group className="mb-3" controlId="parentRelation">
+              <Form.Label>Veli</Form.Label>
+              <Form.Select name="parentRelation" value={formData.parentRelation} onChange={handleChange}>
+                <option>Seçiniz...</option>
+                <option value="Anne">Anne</option>
+                <option value="Baba">Baba</option>
+                <option value="Diğer">Diğer</option>
+              </Form.Select>
             </Form.Group>
             <Row>
-                <Col md={6}><Form.Group className="mb-3" controlId="veliAdSoyad"><Form.Label>Adı Soyadı</Form.Label><Form.Control value={formData.veliAdSoyad} onChange={handleChange} /></Form.Group></Col>
-                <Col md={6}><Form.Group className="mb-3" controlId="veliMeslek"><Form.Label>Mesleği</Form.Label><Form.Control value={formData.veliMeslek} onChange={handleChange} /></Form.Group></Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="parentName">
+                  <Form.Label>Adı Soyadı</Form.Label>
+                  <Form.Control name="parentName" type="text" value={formData.parentName} onChange={handleChange} onBlur={handleBlur} isInvalid={!!formErrors.parentName} required />
+                  <Form.Control.Feedback type="invalid">{formErrors.parentName}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="parentOccupation">
+                  <Form.Label>Mesleği</Form.Label>
+                  <Form.Control name="parentOccupation" type="text" value={formData.parentOccupation} onChange={handleChange} />
+                </Form.Group>
+              </Col>
             </Row>
-             <Row>
-                <Col md={6}><Form.Group className="mb-3" controlId="veliTelCep"><Form.Label>Telefon Cep</Form.Label><Form.Control type="tel" value={formData.veliTelCep} onChange={handleChange} required /></Form.Group></Col>
-                <Col md={6}><Form.Group className="mb-3" controlId="veliEposta"><Form.Label>E-Posta</Form.Label><Form.Control type="email" value={formData.veliEposta} onChange={handleChange} /></Form.Group></Col>
-            </Row>
-            <Form.Group className="mb-3" controlId="veliEvAdres"><Form.Label>Ev Adresi</Form.Label><Form.Control as="textarea" rows={2} value={formData.veliEvAdres} onChange={handleChange} /></Form.Group>
-          </Accordion.Body>
-        </Accordion.Item>
-        
-
-
-        {/* AKADEMİK BİLGİLER */}
-        <Accordion.Item eventKey="3">
-          <Accordion.Header>Akademik Bilgiler</Accordion.Header>
-          <Accordion.Body>
             <Row>
-                <Col md={4}><Form.Group className="mb-3" controlId="lgsPuani"><Form.Label>LGS Yerleştirme Puanı</Form.Label><Form.Control value={formData.lgsPuani} onChange={handleChange} /></Form.Group></Col>
-                <Col md={4}><Form.Group className="mb-3" controlId="lgsGenelYuzdelik"><Form.Label>Türkiye Geneli Yüzdelik Dilim</Form.Label><Form.Control value={formData.lgsGenelYuzdelik} onChange={handleChange} /></Form.Group></Col>
-                <Col md={4}><Form.Group className="mb-3" controlId="lgsIlYuzdelik"><Form.Label>İl Geneli Yüzdelik Dilim</Form.Label><Form.Control value={formData.lgsIlYuzdelik} onChange={handleChange} /></Form.Group></Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="parentPhone">
+                  <Form.Label>Cep Telefonu</Form.Label>
+                  <Form.Control name="parentPhone" type="tel" value={formData.parentPhone} onChange={handleChange} onBlur={handleBlur} isInvalid={!!formErrors.parentPhone} required />
+                  <Form.Control.Feedback type="invalid">{formErrors.parentPhone}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group className="mb-3" controlId="parentEmail">
+                  <Form.Label>E-Posta</Form.Label>
+                  <Form.Control name="parentEmail" type="email" value={formData.parentEmail} onChange={handleChange} onBlur={handleBlur} isInvalid={!!formErrors.parentEmail} required />
+                  <Form.Control.Feedback type="invalid">{formErrors.parentEmail}</Form.Control.Feedback>
+                </Form.Group>
+              </Col>
             </Row>
-            <hr />
-            <p>LGS Sınavı Doğru/Yanlış Sayıları</p>
-            <Row>
-                <Col><Form.Group className="mb-3" controlId="turkceDogru"><Form.Label>Türkçe D.</Form.Label><Form.Control type="number" value={formData.turkceDogru} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="turkceYanlis"><Form.Label>Türkçe Y.</Form.Label><Form.Control type="number" value={formData.turkceYanlis} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="matematikDogru"><Form.Label>Matematik D.</Form.Label><Form.Control type="number" value={formData.matematikDogru} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="matematikYanlis"><Form.Label>Matematik Y.</Form.Label><Form.Control type="number" value={formData.matematikYanlis} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="fenDogru"><Form.Label>Fen D.</Form.Label><Form.Control type="number" value={formData.fenDogru} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="fenYanlis"><Form.Label>Fen Y.</Form.Label><Form.Control type="number" value={formData.fenYanlis} onChange={handleChange} /></Form.Group></Col>
-            </Row>
-             <Row>
-                <Col><Form.Group className="mb-3" controlId="inkilapDogru"><Form.Label>İnkılap D.</Form.Label><Form.Control type="number" value={formData.inkilapDogru} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="inkilapYanlis"><Form.Label>İnkılap Y.</Form.Label><Form.Control type="number" value={formData.inkilapYanlis} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="dinKulturuDogru"><Form.Label>Din Kültürü D.</Form.Label><Form.Control type="number" value={formData.dinKulturuDogru} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="dinKulturuYanlis"><Form.Label>Din Kültürü Y.</Form.Label><Form.Control type="number" value={formData.dinKulturuYanlis} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="yabanciDilDogru"><Form.Label>Yabancı Dil D.</Form.Label><Form.Control type="number" value={formData.yabanciDilDogru} onChange={handleChange} /></Form.Group></Col>
-                <Col><Form.Group className="mb-3" controlId="yabanciDilYanlis"><Form.Label>Yabancı Dil Y.</Form.Label><Form.Control type="number" value={formData.yabanciDilYanlis} onChange={handleChange} /></Form.Group></Col>
-            </Row>
+            <Form.Group className="mb-3" controlId="parentAddress">
+              <Form.Label>Ev Adresi</Form.Label>
+              <Form.Control name="parentAddress" as="textarea" rows={2} value={formData.parentAddress} onChange={handleChange} />
+            </Form.Group>
           </Accordion.Body>
         </Accordion.Item>
 
-        {/* DİĞER BİLGİLER */}
-        <Accordion.Item eventKey="4">
-          <Accordion.Header>Diğer Bilgiler</Accordion.Header>
+        {/* EK NOTLAR */}
+        <Accordion.Item eventKey="2">
+          <Accordion.Header>Ek Notlar</Accordion.Header>
           <Accordion.Body>
-            <Form.Group className="mb-3" controlId="baskaGorusOneri"><Form.Label>Başka Görüş ve Önerileriniz</Form.Label><Form.Control as="textarea" rows={3} value={formData.baskaGorusOneri} onChange={handleChange} /></Form.Group>
+            <Form.Group controlId="notes">
+              <Form.Label>Ziyaretinizle ilgili eklemek istediğiniz özel bir not veya soru varsa buraya yazabilirsiniz.</Form.Label>
+              <Form.Control as="textarea" rows={4} name="notes" value={formData.notes} onChange={handleChange} />
+            </Form.Group>
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>

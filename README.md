@@ -1,6 +1,6 @@
 # Nişantaşı Nuri Akın Anadolu Lisesi - Okul Ziyaret Randevu Sistemi
 
-Bu proje, Nişantaşı Nuri Akın Anadolu Lisesi'ni ziyaret etmek isteyen misafirlerin kolayca randevu alabilmesi için geliştirilmiş modern ve kullanıcı dostu bir web uygulamasıdır.
+Bu proje, Nişantaşı Nuri Akın Anadolu Lisesi'nin okul tanıtım ve ziyaret günleri için veli ve öğrencilerin online randevu almasını sağlayan modern ve kullanıcı dostu bir web uygulamasıdır.
 
 ## ✨ Özellikler
 
@@ -42,11 +42,13 @@ Projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izleyin:
     ```
 
 4.  **Uygulamayı açın:**
-    Tarayıcınızda [http://localhost:3001](http://localhost:3001) adresini ziyaret edin.
+    Tarayıcınızda [http://localhost:3000](http://localhost:3000) adresini ziyaret edin.
 
 ## ☁️ Vercel ile Yayınlama
 
 Bu proje, Next.js'in yaratıcıları tarafından geliştirilen [Vercel](https://vercel.com/) platformu üzerinden kolayca yayınlanabilir. Projenizi bir GitHub repositorisine yükledikten sonra Vercel'e bağlayarak saniyeler içinde canlıya alabilirsiniz.
+
+**⚠️ Önemli Not:** Mevcut uygulama, randevuları ana dizindeki `db.json` dosyasına kaydetmektedir. Bu yöntem geliştirme ve test için uygun olsa da, Vercel gibi platformlarda kalıcı değildir. Her yeni dağıtımda (deploy) veya sunucu yeniden başlatıldığında bu dosya sıfırlanacaktır. Kalıcı veri depolama için projenin bir veritabanına (PostgreSQL, MongoDB, Firebase vb.) bağlanması şiddetle tavsiye edilir.
 
 ### ⚠️ Önemli Not
 
