@@ -1,88 +1,68 @@
+import { kv } from '@vercel/kv';
 import { NextResponse } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 
-const appointmentsFilePath = path.join(process.cwd(), 'db.json');
-
-async function getAppointments() {
-  try {
-    const data = await fs.readFile(appointmentsFilePath, 'utf-8');
-    return JSON.parse(data);
-  } catch {
-    return [];
-  }
+// Define the Appointment type for type safety
+interface Appointment {
+  id: string;
+  createdAt: string;
+  appointmentDateTime: string;
+  studentName: string;
+  studentTC: string;
+  parentRelation: string;
+  parentName: string;
+  parentOccupation: string;
+  parentPhone: string;
+  parentEmail: string;
+  parentAddress: string;
+  notes: string;
 }
 
+// GET all appointments
 export async function GET() {
-  const appointments = await getAppointments();
-  return NextResponse.json(appointments);
-}
-
-export async function DELETE(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json({ message: 'Randevu IDsi gerekli.' }, { status: 400 });
-    }
-
-    const appointments = await getAppointments();
-    const filteredAppointments = appointments.filter((apt: { id: number }) => apt.id.toString() !== id);
-
-    if (appointments.length === filteredAppointments.length) {
-      return NextResponse.json({ message: 'Randevu bulunamadı.' }, { status: 404 });
-    }
-
-    await fs.writeFile(appointmentsFilePath, JSON.stringify(filteredAppointments, null, 2));
-
-    return NextResponse.json({ message: 'Randevu başarıyla silindi.' });
-
-  } catch (error: unknown) {
-    console.error(error);
-    return NextResponse.json({ message: 'Randevu silinirken bir hata oluştu.' }, { status: 500 });
+    const appointments = await kv.get<Appointment[]>('appointments');
+    return NextResponse.json(appointments || []);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    return NextResponse.json({ message: 'Veritabanından randevular alınamadı.' }, { status: 500 });
   }
 }
 
+// POST a new appointment
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { appointmentDateTime, studentName, studentTC, parentPhone } = body;
 
+    // Basic validation
     if (!appointmentDateTime || !studentName || !studentTC || !parentPhone) {
       return NextResponse.json({ message: 'Eksik bilgi. Lütfen tüm zorunlu alanları doldurun (Öğrenci Adı, TC, Veli Cep Telefonu).' }, { status: 400 });
     }
 
-    let appointments = await getAppointments();
+    let allAppointments = await kv.get<Appointment[]>('appointments') || [];
 
-    // Gelen verinin bir dizi olduğundan emin ol, değilse boş bir dizi ile başla.
-    if (!Array.isArray(appointments)) {
-      appointments = [];
-    }
+    // Duplicate check
+    const isDuplicate = allAppointments.some(
+      (apt) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime()
+    );
 
-    const isDuplicate = appointments.some((apt: { appointmentDateTime: string | number | Date }) => new Date(apt.appointmentDateTime).getTime() === new Date(appointmentDateTime).getTime());
     if (isDuplicate) {
       return NextResponse.json({ message: 'Bu saat zaten dolu. Lütfen başka bir saat seçin.' }, { status: 409 });
     }
 
-    const newAppointment = {
+    const newAppointment: Appointment = {
       id: Date.now().toString(),
       createdAt: new Date().toISOString(),
       ...body,
     };
 
-    appointments.push(newAppointment);
+    allAppointments.push(newAppointment);
 
-    await fs.writeFile(appointmentsFilePath, JSON.stringify(appointments, null, 2));
+    await kv.set('appointments', allAppointments);
 
     return NextResponse.json({ message: 'Randevu başarıyla oluşturuldu.', appointment: newAppointment }, { status: 201 });
-
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error(error);
-      return NextResponse.json({ message: error.message }, { status: 500 });
-    }
-    console.error(error);
-    return NextResponse.json({ message: 'Bilinmeyen bir sunucu hatası oluştu.' }, { status: 500 });
+  } catch (error) {
+    console.error('Error creating appointment:', error);
+    return NextResponse.json({ message: 'Randevu oluşturulurken bir hata oluştu.' }, { status: 500 });
   }
 }
