@@ -7,9 +7,9 @@ interface PrintableFormProps {
 }
 
 // Helper to display data or a placeholder
-const DataField = ({ label, value }: { label: string; value: string | number | boolean | null | undefined }) => (
+const DataField = ({ label, value, required = false }: { label: string; value: string | number | boolean | null | undefined; required?: boolean }) => (
   <div className="d-flex justify-content-between border-bottom py-1">
-    <span className="fw-bold">{label}:</span>
+    <span className="fw-bold">{label}{required && <span className="text-danger">*</span>}:</span>
     <span>{value || 'N/A'}</span>
   </div>
 );
@@ -52,30 +52,30 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableFormProps>(
             {/* Left Column */}
             <Col xs={6} className="border-end pe-3">
               <h6 className="bg-light p-2 border mb-3 text-center">Öğrenci Bilgileri</h6>
-              <DataField label="T.C. Numarası" value={application.studentTC} />
-              <DataField label="Adı Soyadı" value={application.studentName} />
-              <DataField label="Doğum Tarihi" value={application.studentDob} />
-              <DataField label="Doğum Yeri" value={application.studentPob} />
-              <DataField label="Cep Telefonu" value={application.studentPhone} />
-              <DataField label="Mezun Olduğu Okul" value={application.studentPrevSchool} />
-              <DataField label="Kan Grubu" value={application.studentBloodType} />
+              <DataField label="T.C. Numarası" value={application.studentTC} required />
+              <DataField label="Adı Soyadı" value={application.studentName} required />
+              <DataField label="Doğum Tarihi" value={application.studentDob} required />
+              <DataField label="Doğum Yeri" value={application.studentPob} required />
+              <DataField label="Cep Telefonu" value={application.studentPhone} required />
+              <DataField label="Mezun Olduğu Okul" value={application.studentPrevSchool} required />
+              <DataField label="Kan Grubu" value={application.studentBloodType} required />
               <DataField label="Engel Durumu" value={application.studentDisability} />
               <DataField label="Sürekli Hastalık" value={application.studentChronicIllness} />
-              <DataField label="Anne-Baba Birlikte mi?" value={application.parentsTogether} />
-              <DataField label="Anne-Baba Öz mü?" value={application.parentsBiological} />
+              <DataField label="Anne-Baba Birlikte mi?" value={application.parentsTogether} required />
+              <DataField label="Anne-Baba Öz mü?" value={application.parentsBiological} required />
             </Col>
 
             {/* Right Column */}
             <Col xs={6} className="ps-3">
               <h6 className="bg-light p-2 border mb-3 text-center">Veli Bilgileri (Anne, Baba veya Vasi)</h6>
-              <DataField label="Adı Soyadı" value={application.guardianName} />
-              <DataField label="Öğrenim Durumu" value={application.guardianEducation} />
-              <DataField label="Mesleği" value={application.guardianOccupation} />
-              <DataField label="Cep Telefonu" value={application.guardianPhoneCell} />
-              <DataField label="E-Posta" value={application.guardianEmail} />
-              <DataField label="Ev Adresi" value={application.guardianAddressHome} />
-              <DataField label="İş Adresi" value={application.guardianAddressWork} />
-              <DataField label="Aylık Gelir" value={application.guardianIncome} />
+              <DataField label="Adı Soyadı" value={application.guardianName} required />
+              <DataField label="Öğrenim Durumu" value={application.guardianEducation} required />
+              <DataField label="Mesleği" value={application.guardianOccupation} required />
+              <DataField label="Cep Telefonu" value={application.guardianPhoneCell} required />
+              <DataField label="E-Posta" value={application.guardianEmail} required />
+              <DataField label="Ev Adresi" value={application.guardianAddressHome} required />
+              <DataField label="İş Adresi" value={application.guardianAddressWork} required />
+              <DataField label="Aylık Gelir" value={application.guardianIncome} required />
             </Col>
           </Row>
 
@@ -87,8 +87,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableFormProps>(
             </Col>
             {/* LGS Info */}
             <Col xs={6} className="border-end pe-3">
-              <DataField label="LGS Puanı" value={application.lgsScore} />
-              <DataField label="Türkiye Geneli %" value={application.lgsPercentileTurkey} />
+              <DataField label="LGS Puanı" value={application.lgsScore} required />
+              <DataField label="Türkiye Geneli %" value={application.lgsPercentileTurkey} required />
               <DataField label="İl Geneli %" value={application.lgsPercentileCity} />
               <DataField label="Bursluluk Kazandı mı?" value={application.scholarshipWon} />
               <DataField label="TÜBİTAK İlgisi" value={application.tubitakInterest} />
@@ -112,9 +112,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableFormProps>(
                 <h6 className="bg-light p-2 border mb-3 text-center">Görüş ve Öneriler</h6>
                 <p className="mb-1"><strong>Okul Hakkındaki Görüş:</strong> {application.opinionSchool || 'N/A'}</p>
                 <p className="mb-1"><strong>Okuldan Beklentiler:</strong> {application.opinionExpectations || 'N/A'}</p>
-                <p className="mb-1"><strong>Okul İçin Öneriler:</strong> {application.opinionSuggestions || 'N/A'}</p>
-                <DataField label="Okula Destek Olmak İster misiniz?" value={application.supportSchool} />
-                <DataField label="Okul Aile Birliğinde Görev Almak İster misiniz?" value={application.joinPta} />
+                <DataField label="Okula Destek Olmak İster misiniz?" value={application.supportSchool} required />
+                <DataField label="Okul Aile Birliğinde Görev Almak İster misiniz?" value={application.joinPta} required />
             </Col>
           </Row>
         </div>

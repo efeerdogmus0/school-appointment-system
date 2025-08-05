@@ -57,18 +57,35 @@ const PreRegistrationPage = () => {
   }, []); // Empty dependency array means this function is created only once
 
   const validateForm = () => {
-        const newErrors: Partial<FormData & { appointment: string }> = {};
-    // Required fields list
+    const newErrors: Partial<FormData & { appointment: string }> = {};
+
     const requiredFields = [
+      // Öğrenci
       { key: 'studentTC', name: 'Öğrenci T.C. Numarası' },
       { key: 'studentName', name: 'Öğrenci Adı Soyadı' },
       { key: 'studentDob', name: 'Öğrenci Doğum Tarihi' },
+      { key: 'studentPob', name: 'Öğrenci Doğum Yeri' },
       { key: 'studentPhone', name: 'Öğrenci Cep Telefonu' },
+      { key: 'studentPrevSchool', name: 'Mezun Olduğu Okul' },
+      { key: 'studentBloodType', name: 'Öğrenci Kan Grubu' },
+      { key: 'parentsTogether', name: 'Anne - Baba Birlikte mi?' },
+      { key: 'parentsBiological', name: 'Anne - Baba öz mü?' },
+      // Veli
       { key: 'guardianName', name: 'Veli Adı Soyadı' },
+      { key: 'guardianEducation', name: 'Veli Öğrenim Durumu' },
+      { key: 'guardianOccupation', name: 'Veli Mesleği' },
       { key: 'guardianPhoneCell', name: 'Veli Cep Telefonu' },
       { key: 'guardianEmail', name: 'Veli E-Posta' },
+      { key: 'guardianBloodType', name: 'Veli Kan Grubu' },
+      { key: 'guardianAddressHome', name: 'Veli Ev Adresi' },
+      { key: 'guardianAddressWork', name: 'Veli İş Adresi' },
+      { key: 'guardianIncome', name: 'Veli Aylık Geliri' },
+      // Sınav
       { key: 'lgsScore', name: 'LGS Puanı' },
       { key: 'lgsPercentileTurkey', name: 'Türkiye Geneli Yüzdelik Dilimi' },
+      // Diğer
+      { key: 'supportSchool', name: 'Okula Destek' },
+      { key: 'joinPta', name: 'Okul Aile Birliği' },
     ];
 
     requiredFields.forEach(field => {
@@ -170,6 +187,17 @@ const PreRegistrationPage = () => {
             <Card className="p-4 shadow-sm">
               <h1 className="text-center mb-4">Nuri Akın Anadolu Lisesi Ön Kayıt Formu</h1>
               {showAlert && <Alert variant={alertVariant} onClose={() => setShowAlert(false)} dismissible>{alertMessage}</Alert>}
+
+              <Alert variant="info">
+                <Alert.Heading as="h6">Randevu Tarihleri Hakkında Bilgilendirme</Alert.Heading>
+                <p className="mb-1">
+                  Ön kayıt randevuları <strong>18-22 Ağustos</strong> ve <strong>25-26 Ağustos</strong> tarihleri arasında alınabilmektedir.
+                </p>
+                <hr/>
+                <p className="mb-0">
+                  <strong>Not:</strong> 12:00 ve 12:20 saatleri arasında randevu verilmemektedir.
+                </p>
+              </Alert>
               <Form onSubmit={handleSubmit}>
                 <Card id="appointment-scheduler-card" className="mb-4 shadow-sm">
                   <Card.Body>
@@ -189,14 +217,14 @@ const PreRegistrationPage = () => {
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>T.C. Numarası</RequiredLabel><Form.Control id="studentTC" type="text" name="studentTC" onChange={handleInputChange} isInvalid={!!errors.studentTC} /><Form.Control.Feedback type="invalid">{errors.studentTC}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Adı Soyadı</RequiredLabel><Form.Control id="studentName" type="text" name="studentName" onChange={handleInputChange} isInvalid={!!errors.studentName} /><Form.Control.Feedback type="invalid">{errors.studentName}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Doğum Tarihi</RequiredLabel><Form.Control id="studentDob" type="date" name="studentDob" onChange={handleInputChange} isInvalid={!!errors.studentDob} /><Form.Control.Feedback type="invalid">{errors.studentDob}</Form.Control.Feedback></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Doğum Yeri (İl-İlçe)</Form.Label><Form.Control type="text" name="studentPob" onChange={handleInputChange} /></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Doğum Yeri (İl-İlçe)</RequiredLabel><Form.Control id="studentPob" type="text" name="studentPob" onChange={handleInputChange} isInvalid={!!errors.studentPob} /><Form.Control.Feedback type="invalid">{errors.studentPob}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Cep Telefonu</RequiredLabel><Form.Control id="studentPhone" type="tel" name="studentPhone" onChange={handleInputChange} isInvalid={!!errors.studentPhone} /><Form.Control.Feedback type="invalid">{errors.studentPhone}</Form.Control.Feedback></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Mezun Olduğu Okul</Form.Label><Form.Control type="text" name="studentPrevSchool" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Kan Grubu</Form.Label><Form.Control type="text" name="studentBloodType" onChange={handleInputChange} /></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Mezun Olduğu Okul</RequiredLabel><Form.Control id="studentPrevSchool" type="text" name="studentPrevSchool" onChange={handleInputChange} isInvalid={!!errors.studentPrevSchool} /><Form.Control.Feedback type="invalid">{errors.studentPrevSchool}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Kan Grubu</RequiredLabel><Form.Control id="studentBloodType" type="text" name="studentBloodType" onChange={handleInputChange} isInvalid={!!errors.studentBloodType} /><Form.Control.Feedback type="invalid">{errors.studentBloodType}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Engel Durumu</Form.Label><Form.Control type="text" name="studentDisability" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={12}><Form.Group className="mb-3"><Form.Label>Sürekli hastalığı var ise belirtiniz</Form.Label><Form.Control as="textarea" rows={2} name="studentChronicIllness" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Anne - Baba Birlikte mi?</Form.Label><Form.Select name="parentsTogether" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Anne - Baba öz mü?</Form.Label><Form.Select name="parentsBiological" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Anne - Baba Birlikte mi?</RequiredLabel><Form.Select id="parentsTogether" name="parentsTogether" onChange={handleInputChange} isInvalid={!!errors.parentsTogether}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.parentsTogether}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Anne - Baba öz mü?</RequiredLabel><Form.Select id="parentsBiological" name="parentsBiological" onChange={handleInputChange} isInvalid={!!errors.parentsBiological}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.parentsBiological}</Form.Control.Feedback></Form.Group></Col>
                       </Row>
                     </Accordion.Body>
                   </Accordion.Item>
@@ -207,18 +235,18 @@ const PreRegistrationPage = () => {
                     <Accordion.Body>
                        <Row>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Adı Soyadı</RequiredLabel><Form.Control id="guardianName" type="text" name="guardianName" onChange={handleInputChange} isInvalid={!!errors.guardianName} /><Form.Control.Feedback type="invalid">{errors.guardianName}</Form.Control.Feedback></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Öğrenim Durumu</Form.Label><Form.Control type="text" name="guardianEducation" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Mesleği</Form.Label><Form.Control type="text" name="guardianOccupation" onChange={handleInputChange} /></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Öğrenim Durumu</RequiredLabel><Form.Control id="guardianEducation" type="text" name="guardianEducation" onChange={handleInputChange} isInvalid={!!errors.guardianEducation} /><Form.Control.Feedback type="invalid">{errors.guardianEducation}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Mesleği</RequiredLabel><Form.Control id="guardianOccupation" type="text" name="guardianOccupation" onChange={handleInputChange} isInvalid={!!errors.guardianOccupation} /><Form.Control.Feedback type="invalid">{errors.guardianOccupation}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Telefon Cep</RequiredLabel><Form.Control id="guardianPhoneCell" type="tel" name="guardianPhoneCell" onChange={handleInputChange} isInvalid={!!errors.guardianPhoneCell} /><Form.Control.Feedback type="invalid">{errors.guardianPhoneCell}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Telefon Ev</Form.Label><Form.Control type="tel" name="guardianPhoneHome" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Telefon İş</Form.Label><Form.Control type="tel" name="guardianPhoneWork" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><RequiredLabel>E-Posta</RequiredLabel><Form.Control id="guardianEmail" type="email" name="guardianEmail" onChange={handleInputChange} isInvalid={!!errors.guardianEmail} /><Form.Control.Feedback type="invalid">{errors.guardianEmail}</Form.Control.Feedback></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Kan Grubu</Form.Label><Form.Control type="text" name="guardianBloodType" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={12}><Form.Group className="mb-3"><Form.Label>Ev Adresi</Form.Label><Form.Control as="textarea" rows={2} name="guardianAddressHome" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={12}><Form.Group className="mb-3"><Form.Label>İş Adresi</Form.Label><Form.Control as="textarea" rows={2} name="guardianAddressWork" onChange={handleInputChange} /></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Kan Grubu</RequiredLabel><Form.Control id="guardianBloodType" type="text" name="guardianBloodType" onChange={handleInputChange} isInvalid={!!errors.guardianBloodType} /><Form.Control.Feedback type="invalid">{errors.guardianBloodType}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={12}><Form.Group className="mb-3"><RequiredLabel>Ev Adresi</RequiredLabel><Form.Control id="guardianAddressHome" as="textarea" rows={2} name="guardianAddressHome" onChange={handleInputChange} isInvalid={!!errors.guardianAddressHome} /><Form.Control.Feedback type="invalid">{errors.guardianAddressHome}</Form.Control.Feedback></Form.Group></Col>
+                        <Col md={12}><Form.Group className="mb-3"><RequiredLabel>İş Adresi</RequiredLabel><Form.Control id="guardianAddressWork" as="textarea" rows={2} name="guardianAddressWork" onChange={handleInputChange} isInvalid={!!errors.guardianAddressWork} /><Form.Control.Feedback type="invalid">{errors.guardianAddressWork}</Form.Control.Feedback></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Sürekli hastalığı var mı?</Form.Label><Form.Control type="text" name="guardianChronicIllness" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Engel Durumu</Form.Label><Form.Control type="text" name="guardianDisability" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Aylık Geliri</Form.Label><Form.Control type="text" name="guardianIncome" onChange={handleInputChange} /></Form.Group></Col>
+                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Aylık Geliri</RequiredLabel><Form.Control id="guardianIncome" type="text" name="guardianIncome" onChange={handleInputChange} isInvalid={!!errors.guardianIncome} /><Form.Control.Feedback type="invalid">{errors.guardianIncome}</Form.Control.Feedback></Form.Group></Col>
                       </Row>
                     </Accordion.Body>
                   </Accordion.Item>
@@ -275,10 +303,9 @@ const PreRegistrationPage = () => {
                     <Accordion.Header>Görüş ve Öneriler</Accordion.Header>
                     <Accordion.Body>
                         <Form.Group className="mb-3"><Form.Label>Okulumuz Hakkındaki Görüşleriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionSchool" onChange={handleInputChange} /></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Okulumuz&apos;dan Beklentileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionExpectations" onChange={handleInputChange} /></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Okulumuz ve eğitim sistemimiz için önerileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionSuggestions" onChange={handleInputChange} /></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Mesleğinizle ilgili konularda okula destek olmak ister misiniz?</Form.Label><Form.Select name="supportSchool" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group>
-                        <Form.Group className="mb-3"><Form.Label>Okul Aile Birliği&apos;nde görev almak ister misiniz?</Form.Label><Form.Select name="joinPta" onChange={handleInputChange}><option>Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select></Form.Group>
+                        <Form.Group className="mb-3"><Form.Label>Okulumuz'dan Beklentileriniz</Form.Label><Form.Control as="textarea" rows={3} name="opinionExpectations" onChange={handleInputChange} /></Form.Group>
+                        <Form.Group className="mb-3"><RequiredLabel>Mesleğinizle ilgili konularda okula destek olmak ister misiniz?</RequiredLabel><Form.Select id="supportSchool" name="supportSchool" onChange={handleInputChange} isInvalid={!!errors.supportSchool}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.supportSchool}</Form.Control.Feedback></Form.Group>
+                        <Form.Group className="mb-3"><RequiredLabel>Okul Aile Birliği'nde görev almak ister misiniz?</RequiredLabel><Form.Select id="joinPta" name="joinPta" onChange={handleInputChange} isInvalid={!!errors.joinPta}><option value="">Seçiniz...</option><option value="Evet">Evet</option><option value="Hayır">Hayır</option></Form.Select><Form.Control.Feedback type="invalid">{errors.joinPta}</Form.Control.Feedback></Form.Group>
                     </Accordion.Body>
                   </Accordion.Item>
                 </Accordion>

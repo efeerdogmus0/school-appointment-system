@@ -11,7 +11,7 @@ const SLOT_DURATION = 5; // Dakika
 const START_HOUR = 10;
 const END_HOUR = 16;
 const BREAK_START_MINUTE = 12 * 60;
-const BREAK_END_MINUTE = 12 * 60 + 20;
+const BREAK_END_MINUTE = 12 * 60 + 25; // 12:20'yi de dahil etmek için 25 yapıldı
 
 const formatDate = (date: Date) => date.toISOString().split('T')[0];
 

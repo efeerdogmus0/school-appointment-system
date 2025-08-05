@@ -57,33 +57,33 @@ export interface ApplicationData {
   // Student Info
   studentTC: string;
   studentName: string;
-  studentDob?: string;
-  studentPob?: string;
+  studentDob: string;
+  studentPob: string;
   studentPhone: string;
   studentEmail?: string;
   studentAddress?: string;
-  studentPrevSchool?: string;
-  studentBloodType?: string;
+  studentPrevSchool: string;
+  studentBloodType: string;
   studentDisability?: string;
   studentChronicIllness?: string;
-  parentsTogether?: string;
-  parentsBiological?: string;
+  parentsTogether: string;
+  parentsBiological: string;
 
   // Guardian Info (Mother, Father, or Legal Guardian)
   guardianName: string;
   guardianTC?: string;
-  guardianEducation?: string;
-  guardianOccupation?: string;
+  guardianEducation: string;
+  guardianOccupation: string;
   guardianPhoneCell: string;
   guardianPhoneHome?: string;
   guardianPhoneWork?: string;
   guardianEmail: string;
-  guardianBloodType?: string;
-  guardianAddressHome?: string;
-  guardianAddressWork?: string;
+  guardianBloodType: string;
+  guardianAddressHome: string;
+  guardianAddressWork: string;
   guardianChronicIllness?: string;
   guardianDisability?: string;
-  guardianIncome?: string;
+  guardianIncome: string;
   guardianProximity?: string;
 
   // Father Info (if different from guardian)
@@ -104,8 +104,8 @@ export interface ApplicationData {
   fatherIncome?: string;
   
   // LGS and Exam Info
-  lgsScore?: string | number;
-  lgsPercentileTurkey?: string | number;
+  lgsScore: string | number;
+  lgsPercentileTurkey: string | number;
   lgsPercentileCity?: string | number;
   scholarshipWon?: string;
   tubitakInterest?: string;
@@ -131,9 +131,8 @@ export interface ApplicationData {
   // Opinions and Suggestions
   opinionSchool?: string;
   opinionExpectations?: string;
-  opinionSuggestions?: string;
-  supportSchool?: string;
-  joinPta?: string;
+  supportSchool: string;
+  joinPta: string;
   schoolPreference?: string;
   schoolChoiceReason?: string;
   hobbies?: string;

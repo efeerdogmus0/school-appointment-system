@@ -35,26 +35,6 @@ export async function GET() {
   }
 }
 
-export async function DELETE(request: NextRequest) {
-  try {
-    const { searchParams } = new URL(request.url);
-    const id = searchParams.get('id');
-
-    if (!id) {
-      return NextResponse.json({ message: 'Silinecek başvuru IDsi belirtilmedi.' }, { status: 400 });
-    }
-
-    await kv.del(id);
-
-    return NextResponse.json({ message: 'Başvuru başarıyla silindi.' }, { status: 200 });
-
-  } catch (error) {
-    console.error('Error deleting application:', error);
-    return NextResponse.json({ message: 'Başvuru silinirken bir sunucu hatası oluştu.' }, { status: 500 });
-  }
-}
-
-
 
 export async function POST(request: NextRequest) {
   try {
