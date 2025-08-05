@@ -118,7 +118,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableFormProps>(
           </Row>
         </div>
         <footer className="mt-4 text-muted text-center small">
-          <p>Bu form, Nişantaşı Nuri Akın Anadolu Lisesi için Efe Erdoğmuş tarafından geliştirilen randevu sistemi tarafından oluşturulmuştur.</p>
+          <p>Bu form, Nişantaşı Nuri Akın Anadolu Lisesi Robotik Kulübü tarafından geliştirilen randevu sistemi tarafından oluşturulmuştur.</p>
         </footer>
     </div>
   );
