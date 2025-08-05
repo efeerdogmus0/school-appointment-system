@@ -11,7 +11,6 @@ const initialFormData = {
   studentName: '',
   studentTC: '',
   studentSchoolNumber: '',
-  studentClass: '', // Bu alan formda yok ama state'de kalabilir
   parentRelation: 'Anne',
   parentName: '',
   parentOccupation: '',
@@ -19,7 +18,6 @@ const initialFormData = {
   parentEmail: '',
   parentAddress: '',
   notes: '',
-  // Önceki formdan kalan ve şu an kullanılmayan diğer alanlar temizlendi.
 };
 
 const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
@@ -161,12 +159,7 @@ const AppointmentForm = ({ selectedDateTime }: AppointmentFormProps) => {
                   <Form.Control name="studentSchoolNumber" type="text" value={formData.studentSchoolNumber} onChange={handleChange} />
                 </Form.Group>
               </Col>
-              <Col md={6}>
-                 <Form.Group className="mb-3" controlId="studentClass">
-                  <Form.Label>Sınıfı</Form.Label>
-                  <Form.Control name="studentClass" type="text" value={formData.studentClass} onChange={handleChange} />
-                </Form.Group>
-              </Col>
+
             </Row>
           </Accordion.Body>
         </Accordion.Item>

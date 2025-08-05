@@ -13,6 +13,37 @@ async function getAppointments() {
   }
 }
 
+export async function GET() {
+  const appointments = await getAppointments();
+  return NextResponse.json(appointments);
+}
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ message: 'Randevu IDsi gerekli.' }, { status: 400 });
+    }
+
+    const appointments = await getAppointments();
+    const filteredAppointments = appointments.filter((apt: { id: number }) => apt.id.toString() !== id);
+
+    if (appointments.length === filteredAppointments.length) {
+      return NextResponse.json({ message: 'Randevu bulunamadı.' }, { status: 404 });
+    }
+
+    await fs.writeFile(appointmentsFilePath, JSON.stringify(filteredAppointments, null, 2));
+
+    return NextResponse.json({ message: 'Randevu başarıyla silindi.' });
+
+  } catch (error: unknown) {
+    console.error(error);
+    return NextResponse.json({ message: 'Randevu silinirken bir hata oluştu.' }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
