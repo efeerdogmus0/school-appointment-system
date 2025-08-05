@@ -2,76 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { Container, Button, Alert, Form, Modal, Accordion, Row, Col, Card } from 'react-bootstrap';
+import { ApplicationData } from '@/types/application';
 
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
-
-// A comprehensive interface for the application data
-interface ApplicationData {
-  id: string;
-  appointmentDate?: string;
-  appointmentTime?: string;
-  studentTC?: string;
-  studentName?: string;
-  studentDob?: string;
-  studentPhone?: string;
-  studentPob?: string;
-  studentPrevSchool?: string;
-  studentBloodType?: string;
-  studentDisability?: string;
-  studentChronicIllness?: string;
-  parentsTogether?: string;
-  parentsBiological?: string;
-  guardianName?: string;
-  guardianEducation?: string;
-  guardianOccupation?: string;
-  guardianPhoneCell?: string;
-  guardianPhoneHome?: string;
-  guardianPhoneWork?: string;
-  guardianEmail?: string;
-  guardianBloodType?: string;
-  guardianAddressHome?: string;
-  guardianAddressWork?: string;
-  guardianChronicIllness?: string;
-  guardianDisability?: string;
-  guardianIncome?: string;
-  fatherName?: string;
-  fatherAlive?: string;
-  fatherEducation?: string;
-  fatherOccupation?: string;
-  fatherPhoneCell?: string;
-  fatherPhoneHome?: string;
-  fatherPhoneWork?: string;
-  fatherEmail?: string;
-  fatherBloodType?: string;
-  fatherAddressHome?: string;
-  fatherAddressWork?: string;
-  fatherChronicIllness?: string;
-  fatherDisability?: string;
-  fatherIncome?: string;
-  lgsScore?: string;
-  lgsPercentileTurkey?: string;
-  lgsPercentileCity?: string;
-  scholarshipWon?: string;
-  tubitakInterest?: string;
-  turkishCorrect?: string;
-  turkishWrong?: string;
-  mathCorrect?: string;
-  mathWrong?: string;
-  scienceCorrect?: string;
-  scienceWrong?: string;
-  englishCorrect?: string;
-  englishWrong?: string;
-  religionCorrect?: string;
-  religionWrong?: string;
-  historyCorrect?: string;
-  historyWrong?: string;
-  opinionSchool?: string;
-  opinionExpectations?: string;
-  opinionSuggestions?: string;
-  supportSchool?: string;
-  joinPta?: string;
-  [key: string]: any; // Allow for other keys if necessary
-}
 
 const AdminPage = () => {
   const [applications, setApplications] = useState<ApplicationData[]>([]);
@@ -152,7 +85,7 @@ const AdminPage = () => {
   }
 
   // Map keys to human-readable labels
-  const fieldLabels: { [key: string]: string } = {
+  const fieldLabels: Partial<Record<keyof ApplicationData, string>> = {
     appointmentDate: 'Randevu Tarihi',
     appointmentTime: 'Randevu Saati',
     studentTC: 'Öğrenci T.C.',
@@ -218,7 +151,7 @@ const AdminPage = () => {
     id: 'Başvuru ID',
   };
 
-  const renderField = (app: ApplicationData, key: string) => {
+  const renderField = (app: ApplicationData, key: keyof ApplicationData) => {
     const value = app[key];
     if (value === null || value === undefined || value === '' || key === 'id') return null;
     const label = fieldLabels[key] || key;
@@ -229,23 +162,31 @@ const AdminPage = () => {
     );
   };
 
-  const renderGroup = (title: string, fields: string[], app: ApplicationData) => {
-    const renderedFields = fields.map(key => renderField(app, key)).filter(Boolean);
-    if (renderedFields.length === 0) return null;
+  const renderGroup = (title: string, fields: (keyof ApplicationData)[], app: ApplicationData) => {
+    // Check if any of the fields in this group have a value.
+    const hasContent = fields.some(key => {
+      const value = app[key];
+      return value !== null && value !== undefined && value !== '';
+    });
+
+    if (!hasContent) return null;
+
     return (
       <Card className="mb-3">
         <Card.Header as="h6">{title}</Card.Header>
-        <Card.Body><Row>{renderedFields}</Row></Card.Body>
+        <Card.Body>
+          {fields.map(key => renderField(app, key))}
+        </Card.Body>
       </Card>
     );
   };
 
-  const studentFields = ['studentTC', 'studentName', 'studentDob', 'studentPob', 'studentPhone', 'studentPrevSchool', 'studentBloodType', 'studentDisability', 'studentChronicIllness', 'parentsTogether', 'parentsBiological'];
-  const guardianFields = ['guardianName', 'guardianEducation', 'guardianOccupation', 'guardianPhoneCell', 'guardianPhoneHome', 'guardianPhoneWork', 'guardianEmail', 'guardianBloodType', 'guardianAddressHome', 'guardianAddressWork', 'guardianChronicIllness', 'guardianDisability', 'guardianIncome'];
-  const fatherFields = ['fatherName', 'fatherAlive', 'fatherEducation', 'fatherOccupation', 'fatherPhoneCell', 'fatherPhoneHome', 'fatherPhoneWork', 'fatherEmail', 'fatherBloodType', 'fatherAddressHome', 'fatherAddressWork', 'fatherChronicIllness', 'fatherDisability', 'fatherIncome'];
-  const lgsFields = ['lgsScore', 'lgsPercentileTurkey', 'lgsPercentileCity', 'scholarshipWon', 'tubitakInterest'];
-  const examDetailsFields = ['turkishCorrect', 'turkishWrong', 'mathCorrect', 'mathWrong', 'scienceCorrect', 'scienceWrong', 'englishCorrect', 'englishWrong', 'religionCorrect', 'religionWrong', 'historyCorrect', 'historyWrong'];
-  const opinionFields = ['opinionSchool', 'opinionExpectations', 'opinionSuggestions', 'supportSchool', 'joinPta'];
+  const studentFields: (keyof ApplicationData)[] = ['studentTC', 'studentName', 'studentDob', 'studentPob', 'studentPhone', 'studentPrevSchool', 'studentBloodType', 'studentDisability', 'studentChronicIllness', 'parentsTogether', 'parentsBiological'];
+  const guardianFields: (keyof ApplicationData)[] = ['guardianName', 'guardianEducation', 'guardianOccupation', 'guardianPhoneCell', 'guardianPhoneHome', 'guardianPhoneWork', 'guardianEmail', 'guardianBloodType', 'guardianAddressHome', 'guardianAddressWork', 'guardianChronicIllness', 'guardianDisability', 'guardianIncome'];
+  const fatherFields: (keyof ApplicationData)[] = ['fatherName', 'fatherAlive', 'fatherEducation', 'fatherOccupation', 'fatherPhoneCell', 'fatherPhoneHome', 'fatherPhoneWork', 'fatherEmail', 'fatherBloodType', 'fatherAddressHome', 'fatherAddressWork', 'fatherChronicIllness', 'fatherDisability', 'fatherIncome'];
+  const lgsFields: (keyof ApplicationData)[] = ['lgsScore', 'lgsPercentileTurkey', 'lgsPercentileCity', 'scholarshipWon', 'tubitakInterest'];
+  const examDetailsFields: (keyof ApplicationData)[] = ['turkishCorrect', 'turkishWrong', 'mathCorrect', 'mathWrong', 'scienceCorrect', 'scienceWrong', 'englishCorrect', 'englishWrong', 'religionCorrect', 'religionWrong', 'historyCorrect', 'historyWrong'];
+  const opinionFields: (keyof ApplicationData)[] = ['opinionSchool', 'opinionExpectations', 'opinionSuggestions', 'supportSchool', 'joinPta'];
 
   return (
     <Container className="my-5">
@@ -267,7 +208,9 @@ const AdminPage = () => {
                 </div>
               </Accordion.Header>
               <Accordion.Body>
-                {renderGroup('Öğrenci Bilgileri', studentFields, app)}
+                <Card.Body>
+                  {studentFields.map(key => renderField(app, key))}
+                </Card.Body>
                 {renderGroup('Veli Bilgileri', guardianFields, app)}
                 {renderGroup('Baba Bilgileri', fatherFields, app)}
                 {renderGroup('LGS ve Başvuru Bilgileri', lgsFields, app)}

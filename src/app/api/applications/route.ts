@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
+import { ApplicationData } from '../../../types/application';
 
 export async function GET() {
   try {
@@ -61,13 +62,15 @@ export async function POST(request: NextRequest) {
 
     // 1. Destructure all expected data from the body
     const {
-      appointmentDate, appointmentTime,
-      studentTC, studentName, studentDob, studentPhone, studentPob, studentPrevSchool, studentBloodType, studentDisability, studentChronicIllness, parentsTogether, parentsBiological,
-      guardianName, guardianEducation, guardianOccupation, guardianPhoneCell, guardianPhoneHome, guardianPhoneWork, guardianEmail, guardianBloodType, guardianAddressHome, guardianAddressWork, guardianChronicIllness, guardianDisability, guardianIncome,
-      fatherName, fatherAlive, fatherEducation, fatherOccupation, fatherPhoneCell, fatherPhoneHome, fatherPhoneWork, fatherEmail, fatherBloodType, fatherAddressHome, fatherAddressWork, fatherChronicIllness, fatherDisability, fatherIncome,
-      lgsScore, lgsPercentileTurkey, lgsPercentileCity, scholarshipWon, tubitakInterest,
-      turkishCorrect, turkishWrong, mathCorrect, mathWrong, scienceCorrect, scienceWrong, englishCorrect, englishWrong, religionCorrect, religionWrong, historyCorrect, historyWrong,
-      opinionSchool, opinionExpectations, opinionSuggestions, supportSchool, joinPta
+      appointmentDate, appointmentTime, studentTC, studentName, studentDob, studentPhone, guardianName, guardianPhoneCell, guardianEmail,
+      // The rest of the fields are collected but not used for this specific validation
+      lgsScore, lgsPercentileTurkey, // These are used for logging
+      _studentPob, _studentPrevSchool, _studentBloodType, _studentDisability, _studentChronicIllness, _parentsTogether, _parentsBiological,
+      _guardianEducation, _guardianOccupation, _guardianPhoneHome, _guardianPhoneWork, _guardianBloodType, _guardianAddressHome, _guardianAddressWork, _guardianChronicIllness, _guardianDisability, _guardianIncome,
+      _fatherName, _fatherAlive, _fatherEducation, _fatherOccupation, _fatherPhoneCell, _fatherPhoneHome, _fatherPhoneWork, _fatherEmail, _fatherBloodType, _fatherAddressHome, _fatherAddressWork, _fatherChronicIllness, _fatherDisability, _fatherIncome,
+      _lgsPercentileCity, _scholarshipWon, _tubitakInterest,
+      _turkishCorrect, _turkishWrong, _mathCorrect, _mathWrong, _scienceCorrect, _scienceWrong, _englishCorrect, _englishWrong, _religionCorrect, _religionWrong, _historyCorrect, _historyWrong,
+      _opinionSchool, _opinionExpectations, _opinionSuggestions, _supportSchool, _joinPta
     } = body;
 
     // 2. Server-side validation for required fields
@@ -89,13 +92,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (allApplicationKeys.length > 0) {
-        const allApplications = await kv.mget(...allApplicationKeys);
-        const slotExists = allApplications.some(app => 
-            (app as any)?.appointmentDate === appointmentDate && 
-            (app as any)?.appointmentTime === appointmentTime
+        const existingApplications = await kv.mget<ApplicationData[]>(...allApplicationKeys);
+
+        // 4. Check for appointment conflicts
+        const isConflict = existingApplications.some(
+          (app) => app.appointmentDate === appointmentDate && app.appointmentTime === appointmentTime
         );
 
-        if (slotExists) {
+        if (isConflict) {
             return NextResponse.json({ message: 'Bu randevu saati daha önce alınmış. Lütfen farklı bir saat seçiniz.' }, { status: 409 }); // 409 Conflict
         }
     }
