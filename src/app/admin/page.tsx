@@ -1,8 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { Container, Button, Alert, Form, Modal, Accordion, Row, Col, Card } from 'react-bootstrap';
+import { useEffect, useState, useRef } from 'react';
+import { Container, Button, Alert, Form, Modal, Accordion, Row, Col, Card, Table } from 'react-bootstrap';
 import { ApplicationData } from '@/types/application';
+import PrintableApplicationForm from '@/components/PrintableApplicationForm';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 
 const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
 
@@ -13,47 +16,27 @@ const AdminPage = () => {
   const [password, setPassword] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(true);
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      fetchApplications();
-    }
-  }, [isAuthenticated]);
+  // State for editing
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingApplication, setEditingApplication] = useState<ApplicationData | null>(null);
+
+  // State for printing
+  const [printingApplication, setPrintingApplication] = useState<ApplicationData | null>(null);
+  const printableFormRef = useRef<HTMLDivElement>(null);
 
   const fetchApplications = async () => {
     try {
       const res = await fetch('/api/applications');
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({ message: 'Başvurular alınamadı.' }));
-        throw new Error(errorData.message);
-      }
+      if (!res.ok) throw new Error('Başvurular yüklenemedi.');
       const data = await res.json();
-      if (Array.isArray(data)) {
-        setApplications(data);
-      } else {
-        setApplications([]);
-        setError('Sunucudan beklenmedik bir veri formatı alındı.');
-      }
+      const sortedData = (Array.isArray(data) ? data : []).sort((a, b) => {
+        const dateA = new Date(`${a.appointmentDate}T${a.appointmentTime}`);
+        const dateB = new Date(`${b.appointmentDate}T${b.appointmentTime}`);
+        return dateA.getTime() - dateB.getTime();
+      });
+      setApplications(sortedData);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Bir hata oluştu.');
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (confirm('Bu başvuruyu kalıcı olarak silmek istediğinizden emin misiniz?')) {
-      try {
-        const res = await fetch(`/api/applications?id=${id}`, {
-          method: 'DELETE',
-        });
-        const result = await res.json();
-        if (!res.ok) {
-          throw new Error(result.message || 'Silme işlemi başarısız oldu.');
-        }
-        alert(result.message);
-        fetchApplications(); // Refresh the list
-      } catch (err) {
-        alert(err instanceof Error ? err.message : 'Bir hata oluştu.');
-        setError(err instanceof Error ? err.message : 'Bir hata oluştu.');
-      }
+      setError(err instanceof Error ? err.message : 'Bilinmeyen bir hata oluştu.');
     }
   };
 
@@ -62,33 +45,105 @@ const AdminPage = () => {
     if (password === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       setShowPasswordModal(false);
+      fetchApplications();
     } else {
       alert('Yanlış şifre!');
     }
   };
 
+  const handleShowEditModal = (app: ApplicationData) => {
+    setEditingApplication({ ...app });
+    setShowEditModal(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingApplication(null);
+  };
+
+  const handleEditInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    if (!editingApplication) return;
+    const { name, value } = e.target;
+    setEditingApplication(prev => prev ? { ...prev, [name]: value } : null);
+  };
+
+  const handleUpdateApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingApplication || !editingApplication.id) return;
+
+    try {
+      const res = await fetch(`/api/applications/${editingApplication.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingApplication),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Başvuru güncellenemedi.');
+      }
+
+      const updatedApplication = await res.json();
+      setApplications(apps => apps.map(app => app.id === updatedApplication.id ? updatedApplication : app));
+      handleCloseEditModal();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Güncelleme sırasında bir hata oluştu.');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (confirm('Bu başvuruyu silmek istediğinizden emin misiniz?')) {
+      try {
+        const res = await fetch(`/api/applications/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('Başvuru silinemedi.');
+        setApplications(applications.filter(app => app.id !== id));
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Silme işlemi sırasında bir hata oluştu.');
+      }
+    }
+  };
+
+  const handleGeneratePdf = async (app: ApplicationData) => {
+    setPrintingApplication(app);
+    // Use a timeout to allow the printable component to re-render with the new data
+    setTimeout(() => {
+      if (!printableFormRef.current) {
+        setError('PDF oluşturma hatası: Form referansı bulunamadı.');
+        return;
+      }
+      html2canvas(printableFormRef.current, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+        pdf.save(`${app.studentName}_basvuru.pdf`);
+        setPrintingApplication(null); // Clean up
+      });
+    }, 500);
+  };
+
   if (!isAuthenticated) {
     return (
-      <Modal show={showPasswordModal} onHide={() => {}} backdrop="static" keyboard={false} centered>
-        <Modal.Header><Modal.Title>Admin Girişi</Modal.Title></Modal.Header>
-        <Modal.Body>
-          <Form onSubmit={handlePasswordSubmit}>
-            <Form.Group>
-              <Form.Label>Lütfen şifreyi giriniz:</Form.Label>
-              <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            </Form.Group>
-            <Button type="submit" className="mt-3">Giriş Yap</Button>
-          </Form>
-        </Modal.Body>
-      </Modal>
+        <Modal show={showPasswordModal} onHide={() => {}} centered backdrop="static" keyboard={false}>
+            <Modal.Header><Modal.Title>Admin Girişi</Modal.Title></Modal.Header>
+            <Modal.Body>
+                <Form onSubmit={handlePasswordSubmit}>
+                    <Form.Group>
+                        <Form.Label>Şifre</Form.Label>
+                        <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoFocus />
+                    </Form.Group>
+                    <Button variant="primary" type="submit" className="mt-3">Giriş Yap</Button>
+                </Form>
+            </Modal.Body>
+        </Modal>
     );
   }
 
-  // Map keys to human-readable labels
-  const fieldLabels: Partial<Record<keyof ApplicationData, string>> = {
+  const fieldLabels: { [key: string]: string } = {
     appointmentDate: 'Randevu Tarihi',
     appointmentTime: 'Randevu Saati',
-    studentTC: 'Öğrenci T.C.',
+    studentTC: 'Öğrenci T.C. Kimlik No',
     studentName: 'Öğrenci Adı Soyadı',
     studentDob: 'Öğrenci Doğum Tarihi',
     studentPob: 'Öğrenci Doğum Yeri',
@@ -217,9 +272,15 @@ const AdminPage = () => {
                 {renderGroup('Derslere Göre D/Y Sayıları', examDetailsFields, app)}
                 {renderGroup('Görüş ve Öneriler', opinionFields, app)}
                 <div className="text-end mt-3">
-                    <Button variant="danger" size="sm" onClick={() => handleDelete(app.id)}>
-                        Başvuruyu Sil
-                    </Button>
+                  <Button variant="secondary" size="sm" className="me-2" onClick={() => handleGeneratePdf(app)}>
+                    PDF İndir
+                  </Button>
+                  <Button variant="primary" size="sm" className="me-2" onClick={() => handleShowEditModal(app)}>
+                    Düzenle
+                  </Button>
+                  <Button variant="danger" size="sm" onClick={() => handleDelete(app.id)}>
+                    Başvuruyu Sil
+                  </Button>
                 </div>
               </Accordion.Body>
             </Accordion.Item>
@@ -228,6 +289,49 @@ const AdminPage = () => {
       ) : (
         <Alert variant="info" className="text-center">Kayıtlı başvuru bulunmamaktadır.</Alert>
       )}
+
+      {/* Edit Modal */}
+      <Modal show={showEditModal} onHide={handleCloseEditModal} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Başvuruyu Düzenle</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {editingApplication && (
+            <Form onSubmit={handleUpdateApplication}>
+              <Row>
+                {Object.keys(editingApplication).map(key => {
+                  if (key === 'id') return null;
+                  const label = fieldLabels[key] || key;
+                  return (
+                    <Col md={6} key={key}>
+                      <Form.Group className="mb-3">
+                        <Form.Label>{label}</Form.Label>
+                        <Form.Control
+                          type="text"
+                          name={key}
+                          value={editingApplication[key as keyof ApplicationData] || ''}
+                          onChange={handleEditInputChange}
+                        />
+                      </Form.Group>
+                    </Col>
+                  );
+                })}
+              </Row>
+              <Button variant="primary" type="submit">Değişiklikleri Kaydet</Button>
+            </Form>
+          )}
+        </Modal.Body>
+      </Modal>
+
+       {/* Printable Form Container - Hidden */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px' }}>
+        {printingApplication && (
+            <div ref={printableFormRef}>
+                <PrintableApplicationForm application={printingApplication} formRef={printableFormRef} />
+            </div>
+        )}
+      </div>
+
     </Container>
   );
 };
