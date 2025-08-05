@@ -36,7 +36,11 @@ const AdminPage = () => {
       const res = await fetch('/api/appointments');
       if (!res.ok) throw new Error('Randevular alınamadı.');
       const data = await res.json();
-      setAppointments(data.sort((a: Appointment, b: Appointment) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      if (Array.isArray(data)) {
+        setAppointments(data.sort((a: Appointment, b: Appointment) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
+      } else {
+        setAppointments([]); // Gelen veri bir dizi değilse, boş dizi olarak ayarla
+      }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
