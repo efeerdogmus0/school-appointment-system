@@ -23,7 +23,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
     }
   };
 
-  const renderNet = (correct: any, wrong: any) => {
+  const renderNet = (correct: string | number | undefined, wrong: string | number | undefined) => {
     if (correct === undefined && wrong === undefined) return 'Girilmedi';
     return `${correct || 0}D / ${wrong || 0}Y`;
   }
