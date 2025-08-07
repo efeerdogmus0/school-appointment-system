@@ -135,7 +135,8 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
                 <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.guardianTC || 'Belirtilmemiş'}</span></p></Col>
                 <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.guardianPhoneCell}</span></p></Col>
                 <Col xs={12}><p><span className="info-label">E-posta:</span> <span className="info-value">{formData.guardianEmail}</span></p></Col>
-                <Col xs={12}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.guardianAddressWork || 'Belirtilmemiş'}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">Aylık Gelir Durumu:</span> <span className="info-value">{formData.guardianIncome || 'Belirtilmemiş'}</span></p></Col>
+                <Col xs={6}><p><span className="info-label">İş Adresi:</span> <span className="info-value">{formData.guardianAddressWork || 'Belirtilmemiş'}</span></p></Col>
             </Row>
           </Card.Body>
         </Card>
@@ -149,6 +150,7 @@ const PrintableApplicationForm = forwardRef<HTMLDivElement, PrintableApplication
                         <Col xs={4}><p><span className="info-label">Mesleği:</span> <span className="info-value">{formData.fatherOccupation || 'Belirtilmemiş'}</span></p></Col>
                         <Col xs={6}><p><span className="info-label">T.C. Kimlik No:</span> <span className="info-value">{formData.fatherTC || 'Belirtilmemiş'}</span></p></Col>
                         <Col xs={6}><p><span className="info-label">Cep Telefonu:</span> <span className="info-value">{formData.fatherPhoneCell || 'Belirtilmemiş'}</span></p></Col>
+                        <Col xs={6}><p><span className="info-label">Aylık Gelir Durumu:</span> <span className="info-value">{formData.fatherIncome || 'Belirtilmemiş'}</span></p></Col>
                     </Row>
                 </Card.Body>
             </Card>

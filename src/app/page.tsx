@@ -102,7 +102,7 @@ const PreRegistrationPage = () => {
       { key: 'guardianBloodType', name: 'Veli Kan Grubu' },
       { key: 'guardianAddressHome', name: 'Veli Ev Adresi' },
       // İş adresi artık zorunlu değil, bu yüzden validasyon listesinden kaldırıldı.
-      { key: 'guardianIncome', name: 'Veli Aylık Geliri' },
+      { key: 'guardianIncome', name: 'Veli Aylık Gelir Durumu' },
       // Sınav
       { key: 'lgsScore', name: 'LGS Puanı' },
       { key: 'lgsPercentileTurkey', name: 'LGS Türkiye Yüzdelik Dilimi' },
@@ -306,7 +306,19 @@ const PreRegistrationPage = () => {
                         <Col md={12}><Form.Group className="mb-3"><Form.Label>İş Adresi</Form.Label><Form.Control id="guardianAddressWork" as="textarea" rows={2} name="guardianAddressWork" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Sürekli hastalığı var mı?</Form.Label><Form.Control type="text" name="guardianChronicIllness" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Engel Durumu</Form.Label><Form.Control type="text" name="guardianDisability" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><RequiredLabel>Aylık Geliri</RequiredLabel><Form.Control id="guardianIncome" type="text" name="guardianIncome" onChange={handleInputChange} isInvalid={!!errors.guardianIncome} /><Form.Control.Feedback type="invalid">{errors.guardianIncome}</Form.Control.Feedback></Form.Group></Col>
+                                                <Col md={6}>
+                          <Form.Group className="mb-3">
+                            <RequiredLabel>Aylık Gelir Durumu</RequiredLabel>
+                            <Form.Select id="guardianIncome" name="guardianIncome" onChange={handleInputChange} isInvalid={!!errors.guardianIncome}>
+                              <option value="">Seçiniz...</option>
+                              <option value="Çok İyi">Çok İyi</option>
+                              <option value="İyi">İyi</option>
+                              <option value="Orta">Orta</option>
+                              <option value="Kötü">Kötü</option>
+                            </Form.Select>
+                            <Form.Control.Feedback type="invalid">{errors.guardianIncome}</Form.Control.Feedback>
+                          </Form.Group>
+                        </Col>
                       </Row>
                     </Accordion.Body>
                   </Accordion.Item>
@@ -330,7 +342,18 @@ const PreRegistrationPage = () => {
                         <Col md={12}><Form.Group className="mb-3"><Form.Label>İş Adresi</Form.Label><Form.Control as="textarea" rows={2} name="fatherAddressWork" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Sürekli hastalığı var mı?</Form.Label><Form.Control type="text" name="fatherChronicIllness" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
                         <Col md={6}><Form.Group className="mb-3"><Form.Label>Engel Durumu</Form.Label><Form.Control type="text" name="fatherDisability" placeholder="Yoksa boş bırakınız" onChange={handleInputChange} /></Form.Group></Col>
-                        <Col md={6}><Form.Group className="mb-3"><Form.Label>Aylık Geliri</Form.Label><Form.Control type="text" name="fatherIncome" onChange={handleInputChange} /></Form.Group></Col>
+                                                <Col md={6}>
+                           <Form.Group className="mb-3">
+                            <Form.Label>Aylık Gelir Durumu</Form.Label>
+                            <Form.Select name="fatherIncome" onChange={handleInputChange}>
+                              <option value="">Seçiniz...</option>
+                              <option value="Çok İyi">Çok İyi</option>
+                              <option value="İyi">İyi</option>
+                              <option value="Orta">Orta</option>
+                              <option value="Kötü">Kötü</option>
+                            </Form.Select>
+                          </Form.Group>
+                        </Col>
                       </Row>
                     </Accordion.Body>
                   </Accordion.Item>
